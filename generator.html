@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MOJAK Meme Generator</title>
-<link rel="icon" href="/assets/favicon.png"/>
+<link rel="icon" type="image/png" id="favicon" href="/assets/favicon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{--bg:#0b0614;--panel:#160c28;--panel2:#1d1136;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--violet:#b985ff;--hot:#ff48c4;--acid:#c6ff4d;--line:rgba(157,77,255,.25);--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
@@ -41,7 +41,7 @@ input[type=range]{width:100%;accent-color:var(--mojak)}
 </head>
 <body>
 <header><div class="nav">
-  <a class="logo" href="/"><img src="/assets/logo.png"/>MEME GENERATOR</a>
+  <a class="logo" href="/"><img id="brandLogo" src="/assets/logo.png"/>MEME GENERATOR</a>
   <div style="display:flex;gap:8px"><a class="btn" href="/studio">Studio</a><a class="btn" href="/">← Site</a></div>
 </div></header>
 
@@ -110,5 +110,6 @@ function toast(m){var t=document.createElement('div');t.textContent=m;t.style.cs
 
 buildThumbs();load();
 </script>
+<script src="/assets/brand.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MOJAK Photo Album</title>
-<link rel="icon" href="/assets/favicon.png"/>
+<link rel="icon" type="image/png" id="favicon" href="/assets/favicon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{--bg:#0b0614;--panel:#160c28;--panel2:#1d1136;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--violet:#b985ff;--hot:#ff48c4;--line:rgba(157,77,255,.25);--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
@@ -35,7 +35,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(11,6,20,.92);backdrop-fi
 </head>
 <body>
 <header><div class="nav">
-  <a class="logo" href="/"><img src="/assets/logo.png"/>PHOTO ALBUM</a>
+  <a class="logo" href="/"><img id="brandLogo" src="/assets/logo.png"/>PHOTO ALBUM</a>
   <div style="display:flex;gap:8px"><a class="btn" href="/gallery">Community Wall</a><a class="btn" href="/">← Site</a></div>
 </div></header>
 <div class="hero"><h1>THE MOJAK ALBUM</h1><p>Official art &amp; clips. Tap any to view full size and download.</p></div>
@@ -76,5 +76,6 @@ ART.forEach(function(a){
 function openLb(a){var dl=a[0];var media=a[1]==='video'?'<video src="'+a[0]+'" controls autoplay loop></video>':'<img src="'+a[0]+'">';$('lb').innerHTML=media+'<a class="btn" href="'+dl+'" download onclick="event.stopPropagation()">⬇ Download</a>';$('lb').classList.add('on');}
 $('lb').onclick=function(){this.classList.remove('on');this.innerHTML='';};
 </script>
+<script src="/assets/brand.js"></script>
 </body>
 </html>

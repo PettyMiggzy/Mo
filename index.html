@@ -11,7 +11,7 @@
 <meta property="og:image" content="https://www.mojak.xyz/assets/mojak-point.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="https://www.mojak.xyz/assets/mojak-point.jpg" />
-<link rel="icon" href="/assets/favicon.png" />
+<link rel="icon" type="image/png" id="favicon" href="/assets/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
@@ -151,7 +151,7 @@ footer{background:#080410;padding:46px 0;text-align:center;color:#8a7bb0;font-si
 
 <header>
   <div class="wrap nav">
-    <a class="logo" href="#"><img src="/assets/logo.png" alt=""/>MOJAK</a>
+    <a class="logo" href="#"><img id="brandLogo" src="/assets/logo.png" alt=""/>MOJAK</a>
     <nav class="nav-links">
       <a href="#about">About</a><a href="#feels">Feels</a><a href="#tokenomics">Tokenomics</a>
       <a href="#buy">How to Buy</a><a href="#tools">Tools</a>
@@ -363,5 +363,6 @@ var last=0;document.addEventListener('mousemove',function(e){var t=Date.now();if
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
 </script>
+<script src="/assets/brand.js"></script>
 </body>
 </html>

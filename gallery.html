@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MOJAK Memes — Community Wall</title>
 <meta name="description" content="Upload and share MOJAK memes. Anyone with the link can post." />
-<link rel="icon" href="/assets/favicon.png" />
+<link rel="icon" type="image/png" id="favicon" href="/assets/favicon.png" />
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -59,7 +59,7 @@ body.admin .adm{display:block}
 </head>
 <body>
 <header><div class="nav">
-  <a class="logo" href="/"><img src="/assets/logo.png"/>MOJAK MEMES</a>
+  <a class="logo" href="/"><img id="brandLogo" src="/assets/logo.png"/>MOJAK MEMES</a>
   <a class="btn btn-s" href="/">← Back to site</a>
 </div></header>
 
@@ -189,5 +189,6 @@ async function load(){
 }
 load();
 </script>
+<script src="/assets/brand.js"></script>
 </body>
 </html>
