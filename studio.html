@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MOJAK Studio — Meme Maker</title>
+<link rel="icon" href="/assets/feels/based.png" />
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#0b0614;--panel:#160c28;--panel2:#1d1136;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--hot:#ff48c4;--line:rgba(157,77,255,.25);--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+.header{background:var(--panel);padding:.8rem 1.4rem;border-bottom:3px solid var(--mojak);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.logo{font-family:var(--disp);font-size:1.7rem;color:var(--violet,#b985ff);display:flex;gap:8px;align-items:center}
+.logo img{width:30px;height:30px}
+.header-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn{padding:.55rem 1.1rem;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:var(--body);font-size:.85rem;transition:transform .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn-p{background:linear-gradient(100deg,#7b2dff,var(--mojak),var(--hot));color:#fff}
+.btn-s{background:var(--panel2);color:#fff;border:1px solid var(--line)}
+a.btn-s{text-decoration:none;display:inline-flex;align-items:center}
+.container{display:flex;min-height:calc(100vh - 64px);flex-wrap:wrap}
+.sidebar{width:300px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column}
+.tabs{display:flex;gap:.4rem;padding:.6rem;background:var(--panel2);overflow-x:auto}
+.tab{padding:.45rem .9rem;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:6px;cursor:pointer;white-space:nowrap;font-size:.82rem;font-family:var(--body)}
+.tab.active{background:var(--mojak);border-color:var(--mojak)}
+.upload{border:2px dashed var(--line);border-radius:8px;padding:1.2rem;text-align:center;margin:.8rem;cursor:pointer;font-size:.85rem;color:var(--dim)}
+.upload:hover{border-color:var(--mojak);background:rgba(157,77,255,.08)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;padding:.8rem;overflow-y:auto;max-height:300px}
+.asset{aspect-ratio:1;background:var(--panel2);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;padding:.3rem;text-align:center;overflow:hidden}
+.asset:hover{border-color:var(--mojak);transform:scale(1.05)}
+.asset img{max-width:100%;max-height:60px;object-fit:contain}
+.asset .sw{width:42px;height:42px;border-radius:6px;border:1px solid var(--line)}
+.asset .lbl{font-size:.62rem;color:var(--dim);margin-top:.2rem}
+.layers{flex:1;overflow-y:auto;padding:.8rem;border-top:1px solid var(--line)}
+.layers h4{color:var(--mojak);margin-bottom:.5rem;font-family:var(--disp);font-size:1.1rem}
+.layer{display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--panel2);margin-bottom:.4rem;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.layer.sel{border-color:var(--mojak)}
+.layer .nm{flex:1;font-size:.82rem}
+.layer button{width:26px;height:26px;border:none;background:var(--panel);color:#fff;border-radius:5px;cursor:pointer}
+.layer button:hover{background:var(--mojak)}
+.canvas-area{flex:1;min-width:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.4rem;background:#070310}
+.cw{position:relative;box-shadow:0 14px 50px rgba(0,0,0,.6);border-radius:8px;overflow:hidden;background:#fff;max-width:100%}
+#c{display:block;cursor:move;max-width:100%}
+.props{width:280px;background:var(--panel);border-left:1px solid var(--line);padding:1.2rem;overflow-y:auto}
+.pg{margin-bottom:1.2rem}
+.pl{display:block;margin-bottom:.4rem;font-weight:700;color:var(--mojak);font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
+.sl{font-size:.74rem;color:var(--dim);margin-top:.4rem;display:block}
+input[type=range]{width:100%;accent-color:var(--mojak)}
+input[type=color]{width:100%;height:38px;border:none;border-radius:6px;cursor:pointer;background:none}
+input[type=text]{width:100%;padding:.55rem;background:var(--panel2);border:1px solid var(--line);color:#fff;border-radius:6px;font-family:var(--body)}
+.vd{text-align:right;font-size:.72rem;color:var(--dim)}
+.modal{display:none;position:fixed;inset:0;background:rgba(7,3,16,.85);z-index:1000;justify-content:center;align-items:center}
+.modal.on{display:flex}
+.mc{background:var(--panel);padding:1.6rem;border-radius:14px;max-width:460px;width:92%;border:2px solid var(--mojak)}
+.mc h2{font-family:var(--disp);color:var(--mojak);margin-bottom:1rem;font-size:1.6rem}
+.exp{display:grid;gap:.7rem;margin:1rem 0}
+.eb{padding:.9rem;background:var(--panel2);border:2px solid transparent;border-radius:8px;color:#fff;cursor:pointer;text-align:left;display:flex;gap:.8rem;align-items:center;font-family:var(--body)}
+.eb:hover{border-color:var(--mojak)}
+@media(max-width:1000px){.container{flex-direction:column}.sidebar,.props{width:100%}}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--mojak);border-radius:4px}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo"><img src="/assets/feels/based.png"/>MOJAK STUDIO</div>
+  <div class="header-actions">
+    <a class="btn btn-s" href="/">← Site</a>
+    <button class="btn btn-s" onclick="clearAll()">🗑️ Clear</button>
+    <button class="btn btn-p" onclick="showExport()">💾 Export</button>
+  </div>
+</header>
+<div class="container">
+  <aside class="sidebar">
+    <div class="tabs">
+      <button class="tab active" data-t="faces" onclick="tab('faces',this)">😐 Faces</button>
+      <button class="tab" data-t="memes" onclick="tab('memes',this)">🖼️ Memes</button>
+      <button class="tab" data-t="bg" onclick="tab('bg',this)">🎨 BG</button>
+      <button class="tab" data-t="text" onclick="tab('text',this)">📝 Text</button>
+    </div>
+    <div class="upload" onclick="document.getElementById('up').click()">📁 Upload your own image
+      <input type="file" id="up" accept="image/*" style="display:none" onchange="handleUpload(event)">
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="layers"><h4>Layers</h4><div id="layers"></div></div>
+  </aside>
+  <main class="canvas-area">
+    <div class="cw"><canvas id="c" width="800" height="800"></canvas></div>
+    <div style="color:var(--dim);font-size:.8rem;margin-top:.6rem" id="stat">800×800 · 0 layers · drag to move · scroll to scale</div>
+  </main>
+  <aside class="props">
+    <div class="pg"><span class="pl">Transform</span>
+      <span class="sl">X</span><input type="range" id="px" min="0" max="800" value="400" oninput="tf()"><div class="vd" id="pxv">400</div>
+      <span class="sl">Y</span><input type="range" id="py" min="0" max="800" value="400" oninput="tf()"><div class="vd" id="pyv">400</div>
+      <span class="sl">Scale</span><input type="range" id="sc" min="0.1" max="4" step="0.05" value="1" oninput="tf()"><div class="vd" id="scv">1.0</div>
+      <span class="sl">Rotation</span><input type="range" id="ro" min="-180" max="180" value="0" oninput="tf()"><div class="vd" id="rov">0°</div>
+    </div>
+    <div class="pg"><span class="pl">Style</span>
+      <span class="sl">Opacity</span><input type="range" id="op" min="0" max="1" step="0.05" value="1" oninput="st()">
+    </div>
+    <div class="pg" id="textProps" style="display:none"><span class="pl">Text</span>
+      <input type="text" id="tc" placeholder="meme text…" oninput="tx()">
+      <span class="sl">Size</span><input type="range" id="fs" min="14" max="160" value="64" oninput="tx()">
+      <span class="sl">Color</span><input type="color" id="tcol" value="#ffffff" onchange="tx()">
+    </div>
+    <div class="pg">
+      <button class="btn btn-p" style="width:100%" onclick="dup()">📋 Duplicate</button>
+      <button class="btn btn-s" style="width:100%;margin-top:.5rem" onclick="front()">⬆️ To Front</button>
+      <button class="btn btn-s" style="width:100%;margin-top:.5rem" onclick="back()">⬇️ To Back</button>
+    </div>
+  </aside>
+</div>
+<div class="modal" id="exp"><div class="mc"><h2>Export your MOJAK</h2>
+  <div class="exp">
+    <button class="eb" onclick="dl('png')"><span>🖼️</span><div><b>Download PNG</b><div style="font-size:.78rem;color:var(--dim)">transparent / full quality</div></div></button>
+    <button class="eb" onclick="dl('jpg')"><span>📸</span><div><b>Download JPG</b><div style="font-size:.78rem;color:var(--dim)">white background</div></div></button>
+    <button class="eb" onclick="clip()"><span>📋</span><div><b>Copy to clipboard</b><div style="font-size:.78rem;color:var(--dim)">paste into TG / X</div></div></button>
+  </div>
+  <button class="btn btn-s" style="width:100%" onclick="document.getElementById('exp').classList.remove('on')">Close</button>
+</div></div>
+
+<script>
+var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+var layers=[],sel=-1,drag=false,ds={x:0,y:0},cur='faces';
+var ASSETS={
+  faces:[['cope','Coper'],['doomer','Doomer'],['bloomer','Bloomer'],['based','Based'],['comfy','Comfy'],['sending','Sending'],['rage','Rage'],['npc','NPC']].map(function(a){return{src:'/assets/feels/'+a[0]+'.png',label:a[1]};}),
+  memes:[{src:'/assets/mojak-point.jpg',label:'Pointing'},{src:'/assets/mojak-hospital.jpg',label:'Hospital'},{src:'/assets/mojak-hero.jpg',label:'Platform'}],
+  bg:[['#9d4dff','Purple'],['#0b0614','Dark'],['#ffffff','White'],['#ff48c4','Pink'],['#c6ff4d','Acid'],['#7b2dff','Royal']].map(function(a){return{color:a[0],label:a[1]};}),
+  text:[]
+};
+var imgCache={};
+function loadImg(src,cb){if(imgCache[src])return cb(imgCache[src]);var im=new Image();im.onload=function(){imgCache[src]=im;cb(im);};im.src=src;}
+function $(i){return document.getElementById(i);}
+
+function renderAssets(){var g=$('grid');g.innerHTML='';if(cur==='text'){var d=document.createElement('div');d.className='asset';d.innerHTML='<div style="font-size:1.6rem">＋</div><div class="lbl">Add Text</div>';d.onclick=addText;g.appendChild(d);return;}
+  ASSETS[cur].forEach(function(a){var d=document.createElement('div');d.className='asset';
+    if(a.color){d.innerHTML='<div class="sw" style="background:'+a.color+'"></div><div class="lbl">'+a.label+'</div>';d.onclick=function(){addBg(a.color,a.label);};}
+    else{d.innerHTML='<img src="'+a.src+'"><div class="lbl">'+a.label+'</div>';d.onclick=function(){addImg(a.src,a.label);};}
+    g.appendChild(d);});
+}
+function tab(t,el){cur=t;document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});el.classList.add('active');renderAssets();}
+
+function addImg(src,name){loadImg(src,function(im){var base=300,s=base/Math.max(im.width,im.height);layers.push({type:'img',name:name,src:src,img:im,w:im.width*s,h:im.height*s,x:400,y:400,scale:1,rot:0,op:1});select(layers.length-1);draw();renderLayers();});}
+function addBg(color,name){layers.unshift({type:'bg',name:'BG '+name,color:color,x:400,y:400,scale:1,rot:0,op:1});sel=0;draw();renderLayers();}
+function addText(){layers.push({type:'text',name:'Text',content:'MOJAK',size:64,color:'#ffffff',x:400,y:400,scale:1,rot:0,op:1});select(layers.length-1);draw();renderLayers();}
+function handleUpload(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){var im=new Image();im.onload=function(){var base=320,s=base/Math.max(im.width,im.height);layers.push({type:'img',name:f.name,img:im,w:im.width*s,h:im.height*s,x:400,y:400,scale:1,rot:0,op:1});select(layers.length-1);draw();renderLayers();};im.src=ev.target.result;};r.readAsDataURL(f);}
+
+function renderLayers(){var L=$('layers');L.innerHTML='';[].concat(layers).reverse().forEach(function(l,i){var idx=layers.length-1-i;var d=document.createElement('div');d.className='layer'+(idx===sel?' sel':'');d.innerHTML='<div class="nm">'+l.name+'</div><button onclick="event.stopPropagation();del('+idx+')">🗑️</button>';d.onclick=function(){select(idx);};L.appendChild(d);});
+  $('stat').textContent='800×800 · '+layers.length+' layers · drag to move · scroll to scale';}
+function select(i){sel=i;renderLayers();var l=layers[i];$('textProps').style.display=l&&l.type==='text'?'block':'none';if(!l)return;$('px').value=l.x;$('py').value=l.y;$('sc').value=l.scale;$('ro').value=l.rot;$('op').value=l.op;if(l.type==='text'){$('tc').value=l.content;$('fs').value=l.size;$('tcol').value=l.color;}vals();}
+function vals(){var l=layers[sel];if(!l)return;$('pxv').textContent=Math.round(l.x);$('pyv').textContent=Math.round(l.y);$('scv').textContent=l.scale.toFixed(2);$('rov').textContent=l.rot+'°';}
+function tf(){if(sel<0)return;var l=layers[sel];l.x=+$('px').value;l.y=+$('py').value;l.scale=+$('sc').value;l.rot=+$('ro').value;vals();draw();}
+function st(){if(sel<0)return;layers[sel].op=+$('op').value;draw();}
+function tx(){if(sel<0)return;var l=layers[sel];if(l.type!=='text')return;l.content=$('tc').value;l.size=+$('fs').value;l.color=$('tcol').value;draw();}
+
+function draw(){ctx.clearRect(0,0,800,800);layers.forEach(function(l,idx){ctx.save();ctx.globalAlpha=l.op;
+  if(l.type==='bg'){ctx.fillStyle=l.color;ctx.fillRect(0,0,800,800);ctx.restore();return;}
+  ctx.translate(l.x,l.y);ctx.rotate(l.rot*Math.PI/180);ctx.scale(l.scale,l.scale);
+  if(l.type==='img'&&l.img){ctx.drawImage(l.img,-l.w/2,-l.h/2,l.w,l.h);if(idx===sel){ctx.strokeStyle='#ff48c4';ctx.lineWidth=2/l.scale;ctx.setLineDash([6,5]);ctx.strokeRect(-l.w/2,-l.h/2,l.w,l.h);}}
+  else if(l.type==='text'){ctx.font='bold '+l.size+'px Impact,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=l.color;ctx.strokeStyle='#000';ctx.lineWidth=l.size/8;ctx.strokeText(l.content||'',0,0);ctx.fillText(l.content||'',0,0);}
+  ctx.restore();});}
+
+function hit(x,y,l){if(l.type==='bg')return false;var dx=x-l.x,dy=y-l.y;if(l.type==='text')return Math.abs(dx)<l.size*2&&Math.abs(dy)<l.size;var w=l.w*l.scale/2,h=l.h*l.scale/2;return Math.abs(dx)<w&&Math.abs(dy)<h;}
+function cpos(e){var r=cv.getBoundingClientRect();var sx=cv.width/r.width,sy=cv.height/r.height;var t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*sx,y:(t.clientY-r.top)*sy};}
+function down(e){var p=cpos(e);for(var i=layers.length-1;i>=0;i--){if(hit(p.x,p.y,layers[i])){select(i);drag=true;ds={x:p.x-layers[i].x,y:p.y-layers[i].y};return;}}sel=-1;renderLayers();draw();}
+function move(e){if(!drag||sel<0)return;e.preventDefault();var p=cpos(e);layers[sel].x=p.x-ds.x;layers[sel].y=p.y-ds.y;$('px').value=layers[sel].x;$('py').value=layers[sel].y;vals();draw();}
+function up(){drag=false;}
+cv.addEventListener('mousedown',down);cv.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',move,{passive:false});window.addEventListener('touchend',up);
+cv.addEventListener('wheel',function(e){if(sel<0||layers[sel].type==='bg')return;e.preventDefault();layers[sel].scale=Math.max(0.1,Math.min(4,layers[sel].scale+(e.deltaY>0?-0.08:0.08)));$('sc').value=layers[sel].scale;vals();draw();},{passive:false});
+
+function del(i){layers.splice(i,1);sel=-1;renderLayers();draw();}
+function dup(){if(sel<0)return;var l=Object.assign({},layers[sel]);l.x+=24;l.y+=24;layers.push(l);select(layers.length-1);renderLayers();draw();}
+function front(){if(sel<0)return;var l=layers.splice(sel,1)[0];layers.push(l);sel=layers.length-1;renderLayers();draw();}
+function back(){if(sel<0)return;var l=layers.splice(sel,1)[0];layers.unshift(l);sel=0;renderLayers();draw();}
+function clearAll(){if(confirm('Clear everything?')){layers=[];sel=-1;renderLayers();draw();}}
+function showExport(){$('exp').classList.add('on');}
+function dl(fmt){var link=document.createElement('a');link.download='mojak-meme.'+fmt;if(fmt==='jpg'){var t=document.createElement('canvas');t.width=800;t.height=800;var tc=t.getContext('2d');tc.fillStyle='#fff';tc.fillRect(0,0,800,800);tc.drawImage(cv,0,0);link.href=t.toDataURL('image/jpeg',0.92);}else link.href=cv.toDataURL('image/png');link.click();$('exp').classList.remove('on');}
+function clip(){cv.toBlob(function(b){navigator.clipboard.write([new ClipboardItem({'image/png':b})]).then(function(){alert('Copied! paste into TG/X');},function(){alert('Copy failed — use Download');});});$('exp').classList.remove('on');}
+
+renderAssets();renderLayers();draw();
+</script>
+</body>
+</html>
