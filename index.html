@@ -45,7 +45,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(11,6,20,.92);backdrop-fi
 
 /* HERO */
 .hero{position:relative;text-align:center;padding:90px 0 96px;overflow:hidden}
-.hero-bg{position:absolute;inset:0;z-index:0;opacity:.55;background-size:cover;background-position:center;filter:saturate(1.3)}
+.hero-bg{position:absolute;inset:0;z-index:0;opacity:.55;background-size:contain;background-repeat:no-repeat;background-position:center;filter:saturate(1.3)}
 .hero::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(135% 95% at 50% 42%,transparent 38%,rgba(11,6,20,.55) 95%),radial-gradient(90% 55% at 50% -10%,rgba(123,45,255,.35),transparent 60%)}
 .hero .inner{position:relative;z-index:2}
 .hero .tag{letter-spacing:7px;color:var(--acid);font-size:16px;text-transform:uppercase}
@@ -307,7 +307,7 @@ document.getElementById('copy').onclick=function(){var b=this;navigator.clipboar
 (function(){var bits=['BORN TO FEEL','THE INTERNET RUNS ON MOJAK','ONE CHAIN ONE MOJAK','I KNOW THAT FEEL BRO'];var s='';for(var k=0;k<2;k++)for(var i=0;i<bits.length;i++)s+='<span>'+bits[i]+' ★</span>';document.getElementById('run').innerHTML=s;document.getElementById('run2').innerHTML=s;})();
 
 /* hero bg rotator */
-(function(){var imgs=['/assets/art/anon.jpg','/assets/art/raid.jpg','/assets/art/train.jpg','/assets/mojak-point.jpg','/assets/art/bear.jpg'];var i=0,bg=document.getElementById('heroBg');function set(){bg.style.backgroundImage='url('+imgs[i]+')';i=(i+1)%imgs.length;}set();setInterval(set,650);})();
+(function(){var imgs=['/assets/art/anon.jpg','/assets/art/raid.jpg','/assets/art/train.jpg','/assets/mojak-point.jpg','/assets/art/bear.jpg'];var i=0,bg=document.getElementById('heroBg');function set(){bg.style.backgroundImage='url('+imgs[i]+')';i=(i+1)%imgs.length;}set();setInterval(set,420);})();
 
 /* ───── live data: nad.fun pre-grad, dexscreener post-grad ───── */
 var NAD='https://api.nad.fun';
