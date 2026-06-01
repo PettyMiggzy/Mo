@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OG MOJAK CTO — the purple feel on Monad</title>
+<meta name="description" content="MOJAK is the purple Monad version of the legendary WOJAK. Every emotion of every crypto trader. One chain. One community. One MOJAK." />
+<link rel="canonical" href="https://mojak.xyz/" />
+<meta property="og:title" content="OG MOJAK CTO" />
+<meta property="og:description" content="The purple Monad WOJAK. Every emotion of every trader. One chain. One community. One MOJAK." />
+<meta property="og:image" content="https://www.mojak.xyz/assets/mojak-point.jpg" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://www.mojak.xyz/assets/mojak-point.jpg" />
+<link rel="icon" href="/assets/mojak-point.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:wght@400;500&family=Archivo+Black&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0b0614; --bg2:#140a26; --ink:#f3ecff; --dim:#9b86c9;
+  --mojak:#9d4dff; --mojak2:#7b2dff; --violet:#b985ff; --acid:#c6ff4d; --hot:#ff48c4;
+  --line:rgba(157,77,255,.22);
+  --disp:'Anton',sans-serif; --disp2:'Archivo Black',sans-serif; --mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);overflow-x:hidden;line-height:1.5;
+  background-image:radial-gradient(110% 60% at 50% -8%,rgba(123,45,255,.4),transparent 60%),
+    radial-gradient(70% 50% at 100% 20%,rgba(255,72,196,.12),transparent 55%),
+    radial-gradient(60% 50% at 0% 35%,rgba(157,77,255,.18),transparent 60%);}
+/* halftone + grain atmosphere */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(157,77,255,.16) 1px,transparent 1.4px);background-size:13px 13px;
+  mask-image:radial-gradient(130% 90% at 50% 0,#000,transparent 80%)}
+body::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.z{position:relative;z-index:2}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+a{color:inherit}
+/* nav */
+nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+  backdrop-filter:blur(12px);background:linear-gradient(180deg,rgba(11,6,20,.9),rgba(11,6,20,.3));border-bottom:1px solid var(--line)}
+nav .brand{font-family:var(--disp);font-size:24px;letter-spacing:.04em;color:var(--violet);text-shadow:0 0 22px rgba(157,77,255,.6)}
+nav .links{display:flex;gap:8px;align-items:center}
+nav a.nl{font-family:var(--mono);font-size:11px;color:var(--dim);text-decoration:none;padding:8px 10px;border-radius:8px}
+nav a.nl:hover{color:var(--ink)}
+.btn{font-family:var(--disp);letter-spacing:.04em;border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  padding:13px 22px;border-radius:4px;font-size:15px;transition:transform .12s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.p{background:linear-gradient(100deg,var(--mojak2),var(--mojak),var(--hot));color:#150022;box-shadow:0 8px 30px rgba(157,77,255,.45)}
+.btn.o{background:transparent;border:1.5px solid var(--mojak);color:var(--violet)}
+nav .btn{padding:9px 16px;font-size:12px}
+/* hero */
+.hero{display:grid;grid-template-columns:1fr;gap:26px;padding:46px 0 36px;align-items:center}
+@media(min-width:860px){.hero{grid-template-columns:1.05fr .95fr;padding:64px 0 48px}}
+.htag{display:inline-block;font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--acid);border:1px solid rgba(198,255,77,.3);padding:6px 12px;border-radius:30px;margin-bottom:18px}
+h1.big{font-family:var(--disp);font-size:clamp(64px,18vw,168px);line-height:.82;letter-spacing:.01em;color:var(--ink);
+  text-shadow:0 0 50px rgba(157,77,255,.45);}
+h1.big .gl{color:var(--mojak);text-shadow:6px 6px 0 var(--hot),0 0 40px rgba(157,77,255,.7)}
+.lead{margin:20px 0 8px;color:var(--dim);max-width:460px;font-size:15px}
+.lead b{color:var(--ink)}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.heroart{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 30px 80px rgba(91,30,168,.5),0 0 0 1px rgba(255,72,196,.12);background:#0a0612;aspect-ratio:1/.92}
+.heroart video,.heroart img{width:100%;height:100%;object-fit:cover;display:block}
+.heroart .rim{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 80px rgba(11,6,20,.7)}
+.heroart .stamp{position:absolute;bottom:12px;left:12px;font-family:var(--disp);font-size:13px;letter-spacing:.1em;color:var(--ink);
+  background:rgba(123,45,255,.55);backdrop-filter:blur(4px);padding:6px 12px;border-radius:4px}
+/* contract pill */
+.capill{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px;background:rgba(20,10,38,.7);border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-width:520px}
+.capill .lab{font-size:9px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+.capill code{font-family:var(--mono);font-size:11px;color:var(--violet);word-break:break-all;flex:1;min-width:180px}
+.capill button{font-family:var(--mono);font-size:11px;border:1px solid var(--mojak);background:transparent;color:var(--violet);border-radius:8px;padding:7px 12px;cursor:pointer}
+.capill button.ok{background:var(--acid);color:#152200;border-color:var(--acid)}
+/* marquee */
+.marq{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(123,45,255,.08);padding:14px 0;margin:8px 0 0}
+.marq .run{display:inline-flex;white-space:nowrap;animation:run 22s linear infinite;font-family:var(--disp);font-size:22px;letter-spacing:.06em;color:var(--violet)}
+.marq .run span{padding:0 26px}.marq .run span b{color:var(--hot)}
+@keyframes run{to{transform:translateX(-50%)}}
+/* sections */
+section{padding:64px 0}
+.kick{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--hot);margin-bottom:12px}
+h2{font-family:var(--disp);font-size:clamp(36px,8vw,64px);line-height:.9;margin-bottom:18px}
+h2 .gl{color:var(--mojak)}
+.copy{color:var(--dim);max-width:620px;font-size:15px}
+.copy b{color:var(--ink)}
+.about{display:grid;grid-template-columns:1fr;gap:28px;align-items:center}
+@media(min-width:820px){.about{grid-template-columns:1fr 1fr}}
+.about .art{border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 60px rgba(91,30,168,.4)}
+.about .art img{width:100%;display:block}
+/* emotions grid */
+.feels{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+@media(min-width:680px){.feels{grid-template-columns:repeat(4,1fr)}}
+.feel{border:1px solid var(--line);border-radius:14px;padding:18px 14px;background:rgba(20,10,38,.55);text-align:center;transition:transform .15s,border-color .2s}
+.feel:hover{transform:translateY(-4px);border-color:var(--mojak)}
+.feel .e{font-size:30px}.feel .t{font-family:var(--disp);font-size:16px;margin-top:6px;color:var(--violet)}.feel .d{font-size:11px;color:var(--dim);margin-top:3px}
+/* memes */
+.memes{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:720px){.memes{grid-template-columns:1fr 1fr}}
+.meme{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0a0612;position:relative}
+.meme img{width:100%;display:block;transition:transform .5s}
+.meme:hover img{transform:scale(1.04)}
+/* buy steps */
+.steps{display:grid;grid-template-columns:1fr;gap:14px;counter-reset:s}
+@media(min-width:760px){.steps{grid-template-columns:repeat(2,1fr)}}
+.step{display:flex;gap:14px;border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(20,10,38,.5)}
+.step .n{counter-increment:s;font-family:var(--disp);font-size:30px;color:var(--mojak);line-height:1;min-width:40px}
+.step .n::before{content:counter(s,decimal-leading-zero)}
+.step h4{font-family:var(--disp);font-size:16px;letter-spacing:.02em;margin-bottom:4px}
+.step p{font-size:13px;color:var(--dim)}
+.step a{color:var(--violet)}
+/* chart */
+.chartwrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a0612;min-height:420px}
+.chartwrap iframe{width:100%;height:480px;border:0;display:block}
+/* footer */
+footer{border-top:1px solid var(--line);padding:42px 0;text-align:center;color:var(--dim);font-size:12px}
+footer .soc{display:flex;gap:10px;justify-content:center;margin:0 0 18px;flex-wrap:wrap}
+footer .soc a{font-family:var(--disp);font-size:13px;letter-spacing:.04em;color:var(--violet);text-decoration:none;border:1px solid var(--line);padding:10px 18px;border-radius:30px}
+footer .soc a:hover{border-color:var(--mojak);color:var(--ink)}
+footer code{color:var(--violet);word-break:break-all;font-size:11px}
+/* reveal */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<nav class="z">
+  <span class="brand">MOJAK</span>
+  <div class="links">
+    <a class="nl" href="#about">ABOUT</a>
+    <a class="nl" href="#feels">FEELS</a>
+    <a class="nl" href="#buy">BUY</a>
+    <a class="btn p" id="navBuy" href="#" target="_blank" rel="noopener">GET MOJAK</a>
+  </div>
+</nav>
+
+<header class="wrap z hero">
+  <div>
+    <span class="htag">OG MOJAK · COMMUNITY TAKEOVER</span>
+    <h1 class="big">THE<br><span class="gl">PURPLE</span><br>FEEL</h1>
+    <p class="lead"><b>MOJAK</b> is the purple Monad version of the legendary <b>WOJAK</b> — the face of every emotion every crypto trader has ever felt. Now on Monad.</p>
+    <div class="cta">
+      <a class="btn p" id="heroBuy" href="#" target="_blank" rel="noopener">▲ BUY $MOJAK</a>
+      <a class="btn o" href="#chart">SEE CHART</a>
+    </div>
+    <div class="capill">
+      <span class="lab">CA</span>
+      <code id="ca">0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777</code>
+      <button id="copy">COPY</button>
+    </div>
+  </div>
+  <div class="heroart rv">
+    <video autoplay muted loop playsinline poster="/assets/mojak-hero.jpg">
+      <source src="/assets/mojak-hero.mp4" type="video/mp4" />
+    </video>
+    <div class="rim"></div>
+    <div class="stamp">ONE MOJAK</div>
+  </div>
+</header>
+
+<div class="marq z">
+  <div class="run" id="run"></div>
+</div>
+
+<section id="about" class="wrap z">
+  <div class="about">
+    <div>
+      <div class="kick">// who is mojak</div>
+      <h2>ONE CHAIN.<br>ONE <span class="gl">MOJAK</span>.</h2>
+      <p class="copy">MOJAK brings one of the internet's most iconic characters to the Monad ecosystem — recolored, reborn, <b>purple</b>. He's felt the pump. He's felt the dump. He's held through it all.<br><br>No roadmap promises. No utility cope. Just <b>the meme, the chain, and the community</b> that runs it. This is a community takeover — MOJAK belongs to the people who hold him.</p>
+    </div>
+    <div class="art rv"><img src="/assets/mojak-point.jpg" alt="MOJAK points at you" loading="lazy"/></div>
+  </div>
+</section>
+
+<section id="feels" class="wrap z">
+  <div class="kick">// every emotion, one face</div>
+  <h2>THE <span class="gl">FEELS</span></h2>
+  <p class="copy">Every trader is a MOJAK. Which one are you today?</p>
+  <div class="feels">
+    <div class="feel rv"><div class="e">😐</div><div class="t">COPED</div><div class="d">"it's fine. i'm fine."</div></div>
+    <div class="feel rv"><div class="e">😭</div><div class="t">DUMPED</div><div class="d">down only. again.</div></div>
+    <div class="feel rv"><div class="e">😏</div><div class="t">COMFY</div><div class="d">bought the bottom</div></div>
+    <div class="feel rv"><div class="e">🚀</div><div class="t">SENDING</div><div class="d">green candles only</div></div>
+  </div>
+</section>
+
+<section id="memes" class="wrap z">
+  <div class="kick">// the lore</div>
+  <h2>MOJAK <span class="gl">CANON</span></h2>
+  <div class="memes" style="margin-top:18px">
+    <div class="meme rv"><img src="/assets/mojak-point.jpg" alt="MOJAK points" loading="lazy"/></div>
+    <div class="meme rv"><img src="/assets/mojak-hospital.jpg" alt="MOJAK visits" loading="lazy"/></div>
+  </div>
+</section>
+
+<section id="buy" class="wrap z">
+  <div class="kick">// join the takeover</div>
+  <h2>HOW TO <span class="gl">BUY</span></h2>
+  <div class="steps" style="margin-top:20px">
+    <div class="step rv"><div class="n"></div><div><h4>GET A WALLET</h4><p>Install an EVM wallet (MetaMask, Rabby, Phantom) and add the Monad network.</p></div></div>
+    <div class="step rv"><div class="n"></div><div><h4>GET MON</h4><p>Bridge or buy <b>MON</b> for gas + swaps. Bridge at <a href="https://bridge.monad.xyz" target="_blank" rel="noopener">bridge.monad.xyz</a>.</p></div></div>
+    <div class="step rv"><div class="n"></div><div><h4>SWAP FOR MOJAK</h4><p>Hit the buy button, paste the contract, confirm. You're in.</p></div></div>
+    <div class="step rv"><div class="n"></div><div><h4>HOLD THE FEEL</h4><p>Welcome to the takeover. One chain. One community. One MOJAK.</p></div></div>
+  </div>
+  <div class="cta" style="margin-top:26px"><a class="btn p" id="buyBtn2" href="#" target="_blank" rel="noopener">▲ BUY $MOJAK NOW</a></div>
+</section>
+
+<section id="chart" class="wrap z">
+  <div class="kick">// live</div>
+  <h2>THE <span class="gl">CHART</span></h2>
+  <div class="chartwrap rv" id="chartwrap" style="margin-top:18px">
+    <div style="padding:60px 20px;text-align:center;color:var(--dim)">
+      Chart loads here once $MOJAK is indexed.<br><a id="chartLink" href="#" target="_blank" rel="noopener" style="color:var(--violet)">Open live chart ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap z">
+  <div class="soc">
+    <a id="tg" href="#" target="_blank" rel="noopener">TELEGRAM</a>
+    <a id="x" href="#" target="_blank" rel="noopener">X / TWITTER</a>
+    <a id="buyBtn3" href="#" target="_blank" rel="noopener">BUY</a>
+  </div>
+  <div>$MOJAK · <code>0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777</code></div>
+  <div style="margin-top:10px;opacity:.6">OG MOJAK CTO · the purple feel on Monad · meme coin, no intrinsic value, DYOR</div>
+</footer>
+
+<script>
+/* ───── CONFIG — fill these in ───── */
+var TOKEN   = '0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777';
+var BUY_URL = 'https://nad.fun/tokens/' + TOKEN;            // TODO confirm exact nad.fun link
+var CHART_URL = 'https://dexscreener.com/monad/' + TOKEN;   // TODO confirm once graduated
+var DS_EMBED  = '';   // optional DexScreener embed URL, e.g. https://dexscreener.com/monad/<pair>?embed=1&theme=dark
+var TG = '';          // TODO telegram invite link
+var X  = '';          // TODO x/twitter link
+
+/* wire links */
+['navBuy','heroBuy','buyBtn2','buyBtn3'].forEach(function(id){var e=document.getElementById(id);if(e)e.href=BUY_URL;});
+document.getElementById('chartLink').href=CHART_URL;
+(function(){var t=document.getElementById('tg');if(TG)t.href=TG;else{t.style.opacity=.4;t.textContent='TELEGRAM (soon)';}
+ var x=document.getElementById('x');if(X)x.href=X;else{x.style.opacity=.4;x.textContent='X (soon)';}})();
+if(DS_EMBED){document.getElementById('chartwrap').innerHTML='<iframe src="'+DS_EMBED+'" title="chart"></iframe>';}
+
+/* copy CA */
+document.getElementById('copy').onclick=function(){var b=this;navigator.clipboard.writeText(TOKEN).then(function(){b.textContent='COPIED ✓';b.classList.add('ok');setTimeout(function(){b.textContent='COPY';b.classList.remove('ok');},1500);});};
+
+/* marquee */
+(function(){var bits='ONE CHAIN · ONE COMMUNITY · ONE <b>MOJAK</b> · THE PURPLE FEEL · ';var s='';for(var i=0;i<2;i++)s+='<span>'+bits.replace(/ · /g,'</span><span>')+'</span>';document.getElementById('run').innerHTML=s;})();
+
+/* reveal on scroll */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+</script>
+</body>
+</html>
