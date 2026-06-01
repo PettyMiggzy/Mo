@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>MOJAK Meme Generator</title>
-<link rel="icon" href="/assets/feels/based.png"/>
+<link rel="icon" href="/assets/favicon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{--bg:#0b0614;--panel:#160c28;--panel2:#1d1136;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--violet:#b985ff;--hot:#ff48c4;--acid:#c6ff4d;--line:rgba(157,77,255,.25);--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
@@ -41,7 +41,7 @@ input[type=range]{width:100%;accent-color:var(--mojak)}
 </head>
 <body>
 <header><div class="nav">
-  <a class="logo" href="/"><img src="/assets/feels/based.png"/>MEME GENERATOR</a>
+  <a class="logo" href="/"><img src="/assets/logo.png"/>MEME GENERATOR</a>
   <div style="display:flex;gap:8px"><a class="btn" href="/studio">Studio</a><a class="btn" href="/">← Site</a></div>
 </div></header>
 
@@ -68,6 +68,7 @@ input[type=range]{width:100%;accent-color:var(--mojak)}
     <label>Text size</label>
     <input type="range" id="size" min="28" max="90" value="54" oninput="draw()"/>
     <h3 style="margin-top:18px">Template</h3>
+    <button class="btn" style="width:100%;margin-bottom:10px" onclick="document.getElementById('up').click()">＋ Upload your own</button>
     <div class="thumbs" id="thumbs"></div>
     <input type="file" id="up" accept="image/*" style="display:none" onchange="handleUpload(event)"/>
   </div>
@@ -88,7 +89,6 @@ var img=new Image(),curSrc=TEMPLATES[0][0],isPng=false;
 function $(i){return document.getElementById(i);}
 
 function buildThumbs(){var t=$('thumbs');t.innerHTML='';
-  var up=document.createElement('div');up.className='thumb';up.style.cssText+=';display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--violet)';up.innerHTML='<div style="font-size:1.5rem">＋</div><div style="font-size:.6rem">Upload</div>';up.onclick=function(){$('up').click();};t.appendChild(up);
   TEMPLATES.forEach(function(tp,i){var d=document.createElement('div');d.className='thumb'+(tp[0]===curSrc?' sel':'');d.innerHTML='<img src="'+tp[0]+'" alt="'+tp[1]+'">';d.onclick=function(){curSrc=tp[0];load();buildThumbs();};t.appendChild(d);});}
 function handleUpload(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){load(ev.target.result,/png/i.test(f.type));buildThumbs();};r.readAsDataURL(f);}
 
