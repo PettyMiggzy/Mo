@@ -340,7 +340,7 @@ loadData();setInterval(loadData,30000);
 window.addEventListener('resize',function(){if(document.getElementById('chartCanvas'))loadData();});
 
 /* auto-scroll reel like wojak.fun */
-(function(){var r=document.querySelector('.reel');if(!r)return;r.innerHTML+=r.innerHTML;var paused=false;r.addEventListener('mouseenter',function(){paused=true;});r.addEventListener('mouseleave',function(){paused=false;});r.addEventListener('touchstart',function(){paused=true;});r.addEventListener('touchend',function(){setTimeout(function(){paused=false;},2500);});function tick(){if(!paused){r.scrollLeft+=0.8;if(r.scrollLeft>=r.scrollWidth/2)r.scrollLeft=0;}requestAnimationFrame(tick);}requestAnimationFrame(tick);})();
+(function(){var r=document.querySelector('.reel');if(!r)return;r.innerHTML+=r.innerHTML;var paused=false;r.addEventListener('mouseenter',function(){paused=true;});r.addEventListener('mouseleave',function(){paused=false;});r.addEventListener('touchstart',function(){paused=true;});r.addEventListener('touchend',function(){setTimeout(function(){paused=false;},2500);});function tick(){if(!paused){r.scrollLeft+=2.4;if(r.scrollLeft>=r.scrollWidth/2)r.scrollLeft=0;}requestAnimationFrame(tick);}requestAnimationFrame(tick);})();
 /* reveal */
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
