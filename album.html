@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MOJAK Photo Album</title>
+<link rel="icon" href="/assets/feels/comfy.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0614;--panel:#160c28;--panel2:#1d1136;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--violet:#b985ff;--hot:#ff48c4;--line:rgba(157,77,255,.25);--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;cursor:url(/assets/cursor.png) 6 2,auto}
+a,button,.card{cursor:url(/assets/cursor-point.png) 6 2,pointer}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:50;background:rgba(11,6,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{max-width:1100px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--disp);font-size:25px;color:var(--violet);display:flex;gap:8px;align-items:center}
+.logo img{width:30px;height:30px}
+.btn{border:none;border-radius:999px;padding:11px 20px;font-weight:700;font-family:var(--body);font-size:14px;color:#fff;background:var(--panel2);border:1px solid var(--line)}
+.hero{text-align:center;padding:46px 20px 10px}
+.hero h1{font-family:var(--disp);font-size:clamp(40px,8vw,72px);transform:rotate(-2deg);text-shadow:4px 4px 0 var(--mojak)}
+.hero p{color:var(--dim);margin-top:6px}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+.grid{column-count:4;column-gap:14px}
+@media(max-width:980px){.grid{column-count:3}}@media(max-width:640px){.grid{column-count:2}}
+.card{break-inside:avoid;margin-bottom:14px;border-radius:14px;overflow:hidden;background:var(--panel);border:1px solid var(--line);position:relative}
+.card img,.card video{width:100%;display:block}
+.card .lbl{position:absolute;bottom:0;left:0;right:0;padding:18px 10px 8px;font-size:13px;font-family:var(--disp);background:linear-gradient(transparent,rgba(11,6,20,.85));opacity:0;transition:.2s}
+.card:hover .lbl{opacity:1}
+.lb{position:fixed;inset:0;background:rgba(5,2,12,.93);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:100;padding:20px}
+.lb.on{display:flex}
+.lb img,.lb video{max-width:92vw;max-height:80vh;border-radius:12px}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:var(--mojak);border-radius:4px}
+</style>
+</head>
+<body>
+<header><div class="nav">
+  <a class="logo" href="/"><img src="/assets/feels/comfy.png"/>PHOTO ALBUM</a>
+  <div style="display:flex;gap:8px"><a class="btn" href="/gallery">Community Wall</a><a class="btn" href="/">← Site</a></div>
+</div></header>
+<div class="hero"><h1>THE MOJAK ALBUM</h1><p>Official art &amp; clips. Tap any to view full size and download.</p></div>
+<div class="wrap"><div class="grid" id="grid"></div></div>
+<div class="lb" id="lb"></div>
+<script>
+var ART=[
+ ['/assets/art/anon.jpg','image','Anon — synthwave'],
+ ['/assets/art/raid.jpg','image','Raid MOJAK'],
+ ['/assets/art/bear.jpg','image','Bear hug'],
+ ['/assets/art/train.jpg','image','Last $100'],
+ ['/assets/art/doomscroll.jpg','image','3AM doomscroll'],
+ ['/assets/art/zipper.jpg','image','Under the skin'],
+ ['/assets/mojak-point.jpg','image','You. Yeah you.'],
+ ['/assets/mojak-hospital.jpg','image','The crew'],
+ ['/assets/mojak-hero.mp4','video','Platform (clip)'],
+ ['/assets/art/clip1.mp4','video','Clip I'],
+ ['/assets/art/clip2.mp4','video','Clip II'],
+ ['/assets/feels/cope.png','image','Coper'],
+ ['/assets/feels/doomer.png','image','Doomer'],
+ ['/assets/feels/bloomer.png','image','Bloomer'],
+ ['/assets/feels/based.png','image','Based'],
+ ['/assets/feels/comfy.png','image','Comfy'],
+ ['/assets/feels/sending.png','image','Sending'],
+ ['/assets/feels/rage.png','image','Rage'],
+ ['/assets/feels/npc.png','image','NPC']
+];
+function $(i){return document.getElementById(i);}
+var g=$('grid');
+ART.forEach(function(a){
+ var d=document.createElement('div');d.className='card';
+ var bg=/\.png$/.test(a[0])?' style="background:#140a26"':'';
+ var media=a[1]==='video'?'<video src="'+a[0]+'" muted loop playsinline onmouseover="this.play()" onmouseout="this.pause()"'+bg+'></video>':'<img src="'+a[0]+'" loading="lazy"'+bg+'>';
+ d.innerHTML=media+'<div class="lbl">'+a[2]+'</div>';
+ d.onclick=function(){openLb(a);};
+ g.appendChild(d);
+});
+function openLb(a){var dl=a[0];var media=a[1]==='video'?'<video src="'+a[0]+'" controls autoplay loop></video>':'<img src="'+a[0]+'">';$('lb').innerHTML=media+'<a class="btn" href="'+dl+'" download onclick="event.stopPropagation()">⬇ Download</a>';$('lb').classList.add('on');}
+$('lb').onclick=function(){this.classList.remove('on');this.innerHTML='';};
+</script>
+</body>
+</html>

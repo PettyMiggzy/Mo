@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MOJAK Meme Generator</title>
+<link rel="icon" href="/assets/feels/based.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0614;--panel:#160c28;--panel2:#1d1136;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--violet:#b985ff;--hot:#ff48c4;--acid:#c6ff4d;--line:rgba(157,77,255,.25);--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;cursor:url(/assets/cursor.png) 6 2,auto}
+a,button,.thumb,input{cursor:url(/assets/cursor-point.png) 6 2,pointer}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:50;background:rgba(11,6,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{max-width:1100px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--disp);font-size:25px;color:var(--violet);display:flex;gap:8px;align-items:center}
+.logo img{width:30px;height:30px}
+.btn{border:none;border-radius:999px;padding:11px 20px;font-weight:700;font-family:var(--body);font-size:14px;color:#fff;background:var(--panel2);border:1px solid var(--line)}
+.btn-p{background:linear-gradient(100deg,#7b2dff,var(--mojak),var(--hot));border:none}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 20px 60px;display:grid;grid-template-columns:1fr 320px;gap:24px}
+@media(max-width:880px){.wrap{grid-template-columns:1fr}}
+h1{font-family:var(--disp);font-size:42px;color:var(--violet);transform:rotate(-1deg);margin-bottom:4px}
+.sub{color:var(--dim);font-size:14px;margin-bottom:16px}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:center}
+#c{max-width:100%;border-radius:10px;background:#000}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;height:max-content}
+.panel h3{font-family:var(--disp);color:var(--violet);font-size:22px;margin-bottom:10px}
+label{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;display:block;margin:12px 0 5px}
+input[type=text]{width:100%;padding:11px 12px;background:var(--panel2);border:1px solid var(--line);color:#fff;border-radius:10px;font-family:var(--body);font-size:15px}
+input[type=range]{width:100%;accent-color:var(--mojak)}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;max-height:230px;overflow-y:auto}
+.thumb{aspect-ratio:1;border-radius:8px;overflow:hidden;border:2px solid transparent;background:var(--panel2)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb.sel{border-color:var(--mojak)}
+.row{display:flex;gap:8px}
+.row .btn{flex:1;text-align:center;padding:10px}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:var(--mojak);border-radius:4px}
+</style>
+</head>
+<body>
+<header><div class="nav">
+  <a class="logo" href="/"><img src="/assets/feels/based.png"/>MEME GENERATOR</a>
+  <div style="display:flex;gap:8px"><a class="btn" href="/studio">Studio</a><a class="btn" href="/">← Site</a></div>
+</div></header>
+
+<div class="wrap">
+  <div>
+    <h1>MAKE A MOJAK</h1>
+    <div class="sub">Pick a template, add your text, download. That easy.</div>
+    <div class="stage">
+      <canvas id="c" width="800" height="800"></canvas>
+      <div class="actions">
+        <button class="btn btn-p" onclick="download()">⬇ Download PNG</button>
+        <button class="btn" onclick="copy()">📋 Copy</button>
+        <button class="btn" onclick="randomTemplate()">🎲 Random pic</button>
+        <button class="btn" onclick="shuffleCap()">💬 Random caption</button>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Caption</h3>
+    <label>Top text</label>
+    <input type="text" id="top" placeholder="top text…" oninput="draw()" maxlength="60"/>
+    <label>Bottom text</label>
+    <input type="text" id="bot" placeholder="bottom text…" oninput="draw()" maxlength="60"/>
+    <label>Text size</label>
+    <input type="range" id="size" min="28" max="90" value="54" oninput="draw()"/>
+    <h3 style="margin-top:18px">Template</h3>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+</div>
+
+<script>
+var TEMPLATES=[
+ ['/assets/art/anon.jpg','Anon'],['/assets/art/raid.jpg','Raid'],['/assets/art/bear.jpg','Bear'],
+ ['/assets/art/train.jpg','Train'],['/assets/art/doomscroll.jpg','Doomscroll'],['/assets/art/zipper.jpg','Zipper'],
+ ['/assets/mojak-point.jpg','Point'],['/assets/mojak-hospital.jpg','Crew'],
+ ['/assets/feels/cope.png','Cope'],['/assets/feels/doomer.png','Doomer'],['/assets/feels/bloomer.png','Bloomer'],
+ ['/assets/feels/based.png','Based'],['/assets/feels/comfy.png','Comfy'],['/assets/feels/sending.png','Sending'],
+ ['/assets/feels/rage.png','Rage'],['/assets/feels/npc.png','NPC']
+];
+var CAPTIONS=["I KNOW THAT FEEL","WE'RE SO BACK","IT'S OVER","FEW UNDERSTAND","GM ANON","WAGMI","COPE & SEETHE","SER PLS","BUY MOJAK","PURPLE PILLED","THE FEELS ARE REAL","DOWN BAD","ONE OF US","I FEEL THAT","HOLD THE LINE"];
+var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+var img=new Image(),curSrc=TEMPLATES[0][0],isPng=false;
+function $(i){return document.getElementById(i);}
+
+function buildThumbs(){var t=$('thumbs');t.innerHTML='';TEMPLATES.forEach(function(tp,i){var d=document.createElement('div');d.className='thumb'+(tp[0]===curSrc?' sel':'');d.innerHTML='<img src="'+tp[0]+'" alt="'+tp[1]+'">';d.onclick=function(){curSrc=tp[0];load();buildThumbs();};t.appendChild(d);});}
+
+function load(){isPng=/\.png$/.test(curSrc);img=new Image();img.crossOrigin='anonymous';img.onload=function(){
+  // size canvas to image aspect, cap 800 wide / 900 tall
+  var W=800,H=Math.round(W*img.height/img.width);if(H>900){H=900;W=Math.round(H*img.width/img.height);}
+  cv.width=W;cv.height=H;draw();};img.src=curSrc;}
+
+function wrap(text,maxW){var words=text.split(' '),lines=[],cur='';for(var i=0;i<words.length;i++){var t=cur?cur+' '+words[i]:words[i];if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=words[i];}else cur=t;}if(cur)lines.push(cur);return lines;}
+function band(text,size,pos){if(!text)return;ctx.font='900 '+size+'px Impact,"Arial Black",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';ctx.lineWidth=Math.max(3,size/6);ctx.strokeStyle='#000';ctx.fillStyle='#fff';var maxW=cv.width*0.92,lh=size*1.05;var lines=wrap(text.toUpperCase(),maxW);var x=cv.width/2;for(var i=0;i<lines.length;i++){var y;if(pos==='top')y=size*0.7+size*0.2+i*lh+10;else y=cv.height-10-(lines.length-1-i)*lh-size*0.5;ctx.strokeText(lines[i],x,y);ctx.fillText(lines[i],x,y);}}
+function draw(){if(!img.complete||!img.width){return;}ctx.clearRect(0,0,cv.width,cv.height);if(isPng){ctx.fillStyle='#140a26';ctx.fillRect(0,0,cv.width,cv.height);}ctx.drawImage(img,0,0,cv.width,cv.height);var s=+$('size').value;band($('top').value,s,'top');band($('bot').value,s,'bottom');}
+
+function download(){var a=document.createElement('a');a.download='mojak-meme.png';a.href=cv.toDataURL('image/png');a.click();}
+function copy(){cv.toBlob(function(b){if(navigator.clipboard&&window.ClipboardItem){navigator.clipboard.write([new ClipboardItem({'image/png':b})]).then(function(){toast('Copied!');},function(){toast('Copy failed — use Download');});}else toast('Use Download');});}
+function randomTemplate(){curSrc=TEMPLATES[Math.floor(Math.random()*TEMPLATES.length)][0];load();buildThumbs();}
+function shuffleCap(){if(!$('top').value){$('top').value=CAPTIONS[Math.floor(Math.random()*CAPTIONS.length)];}else{$('bot').value=CAPTIONS[Math.floor(Math.random()*CAPTIONS.length)];}draw();}
+function toast(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--mojak);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:200';document.body.appendChild(t);setTimeout(function(){t.remove();},1600);}
+
+buildThumbs();load();
+</script>
+</body>
+</html>
