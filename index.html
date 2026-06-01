@@ -136,9 +136,17 @@ footer{background:#080410;padding:46px 0;text-align:center;color:#8a7bb0;font-si
 .rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
 .rv.in{opacity:1;transform:none}
 @media(max-width:820px){.nav-links{display:none}.about-grid,.steps,.tools-grid{grid-template-columns:1fr}}
+
+.rain{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+.rain img{position:absolute;will-change:transform}
+@keyframes fall{from{transform:translateY(-25vh) rotate(0deg)}to{transform:translateY(125vh) rotate(360deg)}}
+.trail{position:fixed;width:22px;margin:-11px 0 0 -11px;pointer-events:none;z-index:39;mix-blend-mode:screen;animation:trailfade .6s linear forwards}
+@keyframes trailfade{from{opacity:.85;transform:scale(1)}to{opacity:0;transform:scale(.25) translateY(10px)}}
+@media(max-width:680px){.rain img{opacity:.22!important}}
 </style>
 </head>
 <body>
+<div class="rain" id="rain"></div>
 
 <header>
   <div class="wrap nav">
@@ -342,6 +350,9 @@ window.addEventListener('resize',function(){if(document.getElementById('chartCan
 
 /* auto-scroll reel like wojak.fun */
 (function(){var r=document.querySelector('.reel');if(!r)return;r.innerHTML+=r.innerHTML;var paused=false;r.addEventListener('mouseenter',function(){paused=true;});r.addEventListener('mouseleave',function(){paused=false;});r.addEventListener('touchstart',function(){paused=true;});r.addEventListener('touchend',function(){setTimeout(function(){paused=false;},2500);});function tick(){if(!paused){r.scrollLeft+=2.4;if(r.scrollLeft>=r.scrollWidth/2)r.scrollLeft=0;}requestAnimationFrame(tick);}requestAnimationFrame(tick);})();
+/* falling MOJAK rain + cursor trail */
+(function(){var fx=['/assets/fx/diamond2.jpg','/assets/fx/finger2.jpg','/assets/fx/diamond1.jpg','/assets/fx/finger1.jpg'];var rain=document.getElementById('rain');if(rain){var N=window.innerWidth<680?12:20;for(var i=0;i<N;i++){var im=document.createElement('img');im.src=fx[i%fx.length];var sz=28+Math.random()*44;im.style.width=sz+'px';im.style.left=(Math.random()*100)+'%';im.style.opacity=(0.22+Math.random()*0.33).toFixed(2);im.style.mixBlendMode='screen';im.style.animation='fall '+(7+Math.random()*9).toFixed(1)+'s linear '+(-Math.random()*14).toFixed(1)+'s infinite';rain.appendChild(im);}}
+var last=0;document.addEventListener('mousemove',function(e){var t=Date.now();if(t-last<45)return;last=t;var s=document.createElement('img');s.src='/assets/fx/trail.jpg';s.className='trail';s.style.left=e.clientX+'px';s.style.top=e.clientY+'px';document.body.appendChild(s);setTimeout(function(){s.remove();},620);});})();
 /* reveal */
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
