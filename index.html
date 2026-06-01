@@ -45,8 +45,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(11,6,20,.92);backdrop-fi
 
 /* HERO */
 .hero{position:relative;text-align:center;padding:90px 0 96px;overflow:hidden}
-.hero-bg{position:absolute;inset:0;z-index:0;opacity:.16;background-size:cover;background-position:center;filter:grayscale(.2) saturate(1.4);transition:opacity 1s}
-.hero::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(120% 80% at 50% 30%,transparent,var(--bg) 75%),radial-gradient(90% 60% at 50% -10%,rgba(123,45,255,.45),transparent 60%)}
+.hero-bg{position:absolute;inset:0;z-index:0;opacity:.55;background-size:cover;background-position:center;filter:saturate(1.3)}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(135% 95% at 50% 42%,transparent 38%,rgba(11,6,20,.55) 95%),radial-gradient(90% 55% at 50% -10%,rgba(123,45,255,.35),transparent 60%)}
 .hero .inner{position:relative;z-index:2}
 .hero .tag{letter-spacing:7px;color:var(--acid);font-size:16px;text-transform:uppercase}
 .hero h1{font-family:var(--disp);font-size:clamp(80px,18vw,220px);line-height:.85;transform:rotate(-2deg);margin:10px 0;color:var(--ink);text-shadow:6px 6px 0 var(--mojak2),12px 12px 0 rgba(255,72,196,.4)}
@@ -97,8 +97,8 @@ header{position:sticky;top:0;z-index:50;background:rgba(11,6,20,.92);backdrop-fi
 .feel .d{font-size:11px;color:var(--dim);margin-top:2px}
 
 /* REEL */
-.reel{display:flex;gap:16px;overflow-x:auto;padding:8px 24px 22px;scroll-snap-type:x mandatory}
-.reel img,.reel video{height:200px;border-radius:16px;flex:0 0 auto;scroll-snap-align:start;border:1px solid var(--line);object-fit:cover}
+.reel{display:flex;gap:16px;overflow-x:auto;padding:8px 24px 22px;scrollbar-width:none}.reel::-webkit-scrollbar{display:none}
+.reel img,.reel video{height:200px;border-radius:16px;flex:0 0 auto;border:1px solid var(--line);object-fit:cover}
 
 /* TOKENOMICS */
 .stats{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:30px}
@@ -307,7 +307,7 @@ document.getElementById('copy').onclick=function(){var b=this;navigator.clipboar
 (function(){var bits=['BORN TO FEEL','THE INTERNET RUNS ON MOJAK','ONE CHAIN ONE MOJAK','I KNOW THAT FEEL BRO'];var s='';for(var k=0;k<2;k++)for(var i=0;i<bits.length;i++)s+='<span>'+bits[i]+' ★</span>';document.getElementById('run').innerHTML=s;document.getElementById('run2').innerHTML=s;})();
 
 /* hero bg rotator */
-(function(){var imgs=['/assets/art/anon.jpg','/assets/art/raid.jpg','/assets/art/train.jpg','/assets/mojak-point.jpg','/assets/art/bear.jpg'];var i=0,bg=document.getElementById('heroBg');function set(){bg.style.backgroundImage='url('+imgs[i]+')';i=(i+1)%imgs.length;}set();setInterval(set,4000);})();
+(function(){var imgs=['/assets/art/anon.jpg','/assets/art/raid.jpg','/assets/art/train.jpg','/assets/mojak-point.jpg','/assets/art/bear.jpg'];var i=0,bg=document.getElementById('heroBg');function set(){bg.style.backgroundImage='url('+imgs[i]+')';i=(i+1)%imgs.length;}set();setInterval(set,650);})();
 
 /* ───── live data: nad.fun pre-grad, dexscreener post-grad ───── */
 var NAD='https://api.nad.fun';
@@ -339,6 +339,8 @@ async function loadData(){try{
 loadData();setInterval(loadData,30000);
 window.addEventListener('resize',function(){if(document.getElementById('chartCanvas'))loadData();});
 
+/* auto-scroll reel like wojak.fun */
+(function(){var r=document.querySelector('.reel');if(!r)return;r.innerHTML+=r.innerHTML;var paused=false;r.addEventListener('mouseenter',function(){paused=true;});r.addEventListener('mouseleave',function(){paused=false;});r.addEventListener('touchstart',function(){paused=true;});r.addEventListener('touchend',function(){setTimeout(function(){paused=false;},2500);});function tick(){if(!paused){r.scrollLeft+=0.8;if(r.scrollLeft>=r.scrollWidth/2)r.scrollLeft=0;}requestAnimationFrame(tick);}requestAnimationFrame(tick);})();
 /* reveal */
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
