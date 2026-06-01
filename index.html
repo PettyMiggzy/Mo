@@ -224,10 +224,16 @@ footer{background:#080410;padding:46px 0;text-align:center;color:#8a7bb0;font-si
 <section class="band" style="padding:40px 0">
   <h2 class="section-title" style="margin-bottom:24px">MEDIA REEL</h2>
   <div class="reel">
+    <img src="/assets/art/raid.jpg"/>
+    <img src="/assets/art/anon.jpg"/>
     <video src="/assets/mojak-hero.mp4" poster="/assets/mojak-hero.jpg" autoplay muted loop playsinline></video>
+    <img src="/assets/art/bear.jpg"/>
+    <img src="/assets/art/train.jpg"/>
+    <video src="/assets/art/clip1.mp4" poster="/assets/art/clip1.jpg" autoplay muted loop playsinline></video>
+    <img src="/assets/art/doomscroll.jpg"/>
+    <img src="/assets/art/zipper.jpg"/>
+    <video src="/assets/art/clip2.mp4" poster="/assets/art/clip2.jpg" autoplay muted loop playsinline></video>
     <img src="/assets/mojak-point.jpg"/><img src="/assets/mojak-hospital.jpg"/>
-    <img src="/assets/feels/based.png" style="background:#160c28"/><img src="/assets/feels/doomer.png" style="background:#160c28"/>
-    <img src="/assets/feels/sending.png" style="background:#160c28"/><img src="/assets/feels/rage.png" style="background:#160c28"/>
   </div>
 </section>
 
@@ -264,7 +270,7 @@ footer{background:#080410;padding:46px 0;text-align:center;color:#8a7bb0;font-si
       <div class="tools">
         <a class="live" href="/studio">🎨 MOJAK Studio</a>
         <a class="live" href="/studio">🧩 Meme Generator</a>
-        <a class="soon">📚 Feels Database (soon)</a>
+        <a class="live" href="/gallery">📸 Meme Wall (upload)</a>
         <a class="soon">🖼️ Photo Album (soon)</a>
         <a class="soon">💾 Drive (soon)</a>
       </div>
@@ -301,7 +307,7 @@ document.getElementById('copy').onclick=function(){var b=this;navigator.clipboar
 (function(){var bits=['BORN TO FEEL','THE INTERNET RUNS ON MOJAK','ONE CHAIN ONE MOJAK','I KNOW THAT FEEL BRO'];var s='';for(var k=0;k<2;k++)for(var i=0;i<bits.length;i++)s+='<span>'+bits[i]+' ★</span>';document.getElementById('run').innerHTML=s;document.getElementById('run2').innerHTML=s;})();
 
 /* hero bg rotator */
-(function(){var imgs=['/assets/mojak-point.jpg','/assets/mojak-hospital.jpg','/assets/feels/doomer.png','/assets/feels/based.png'];var i=0,bg=document.getElementById('heroBg');function set(){bg.style.backgroundImage='url('+imgs[i]+')';i=(i+1)%imgs.length;}set();setInterval(set,4000);})();
+(function(){var imgs=['/assets/art/anon.jpg','/assets/art/raid.jpg','/assets/art/train.jpg','/assets/mojak-point.jpg','/assets/art/bear.jpg'];var i=0,bg=document.getElementById('heroBg');function set(){bg.style.backgroundImage='url('+imgs[i]+')';i=(i+1)%imgs.length;}set();setInterval(set,4000);})();
 
 /* ───── live data: nad.fun pre-grad, dexscreener post-grad ───── */
 var NAD='https://api.nad.fun';
