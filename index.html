@@ -183,7 +183,7 @@ footer{background:#080410;padding:46px 0;text-align:center;color:#8a7bb0;font-si
     <div class="stat5"><span class="l">Price</span><span class="v" id="stPrice">—</span></div>
     <div class="stat5"><span class="l">Market Cap</span><span class="v" id="stMcap">—</span></div>
     <div class="stat5"><span class="l">Holders</span><span class="v" id="stHolders">—</span></div>
-    <div class="stat5"><span class="l">ATH</span><span class="v" id="stAth">—</span></div>
+    <div class="stat5"><span class="l">ATH MC</span><span class="v" id="stAth">—</span></div>
     <div class="stat5"><span class="l">Status</span><span class="v" id="stStatus">—</span></div>
   </div>
   <div class="chartwrap rv" id="chartwrap">
@@ -340,7 +340,7 @@ async function loadData(){try{
   var m=await fetch(NAD+'/trade/market/'+TOKEN).then(function(r){return r.json();});var info=m.market_info||{};
   var pu=parseFloat(info.price_usd||0),supply=parseFloat(info.total_supply||0)/1e18,mcap=pu*supply,ath=parseFloat(info.ath_price_usd||0),q=parseFloat(info.quote_price||0);
   document.getElementById('stPrice').textContent=fUsd(pu);document.getElementById('stMcap').textContent=fMcap(mcap);
-  document.getElementById('stHolders').textContent=info.holder_count!=null?info.holder_count:'—';document.getElementById('stAth').textContent=fUsd(ath);
+  document.getElementById('stHolders').textContent=info.holder_count!=null?info.holder_count:'—';document.getElementById('stAth').textContent=fMcap(ath*supply);
   var grad=info.market_type&&info.market_type.toUpperCase()!=='CURVE';document.getElementById('stStatus').textContent=grad?'GRADUATED':'ON CURVE';
   if(grad){var ds=await fetch('https://api.dexscreener.com/latest/dex/tokens/'+TOKEN).then(function(r){return r.json();}).catch(function(){return{};});var pair=ds&&ds.pairs&&ds.pairs[0];if(pair&&pair.pairAddress){embedDex(pair.pairAddress);return;}}
   drawCurve(q);
