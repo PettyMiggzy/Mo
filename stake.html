@@ -66,6 +66,11 @@ input[type=text],input[type=number]{width:100%;background:var(--void);border:1px
 .foot{text-align:center;color:var(--dim);font-size:11px;margin-top:30px}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:s .7s linear infinite;vertical-align:middle}
 @keyframes s{to{transform:rotate(360deg)}}
+
+.marq{overflow:hidden;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(157,77,255,.06);margin:14px 0}
+.marq span{display:inline-block;padding:9px 0;font-family:var(--fd);font-size:14px;color:var(--gold);animation:scroll 22s linear infinite}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+#wojakSays{font-family:var(--fd);color:var(--green);font-size:15px;margin-top:8px;min-height:20px}
 </style>
 </head>
 <body>
@@ -82,8 +87,9 @@ input[type=text],input[type=number]{width:100%;background:var(--void);border:1px
     <img class="vault" src="/assets/stake-hero.png" alt="stake that mojak" />
     <h1>STAKE &amp;<br>COPE</h1>
     <p class="tag">Lock your $MOJAK and cope productively. Hold longer = up to <b style="color:var(--gold)">5&times;</b> the rewards, because pain builds character. Paper-hand early and the <b>15% cope tax</b> gets ripped from your bag and handed to the chads who stayed. Free to stake — just gas and your dignity. 🫡</p>
+    <div id="wojakSays"></div>
   </div>
-
+<div class="marq"><span id="marqTxt"></span></div>
   <div id="notice" class="notice" style="display:none"></div>
 
   <div class="stats">
@@ -466,6 +472,15 @@ document.getElementById('fundBtn').addEventListener('click',doFund);
 document.querySelectorAll('.tabBtn').forEach(function(b){ b.addEventListener('click',function(){ showTab(b.getAttribute('data-tab')); }); });
 document.getElementById('customDays')&&document.getElementById('customDays').addEventListener('input',updateMult);
 buildLocks(); buildFundPick(); updateMult(); refreshStats();
+</script>
+
+<script>
+(function(){
+ var m="🥩 STAKE THAT MOJAK · paper hands get cooked well-done 🔥 · diamond hands eat first 💎 · \"selling? couldn\u2019t be me\" · cope harder, stake longer · 5× rewards for maximum delusion · gm to lockers only · your bag, medium-rare · ";
+ var e=document.getElementById('marqTxt'); if(e) e.textContent=(m+m);
+ var says=["wojak says: this is financial advice (it\u2019s not)","wojak says: lock it and forget your password","wojak says: down 90%? still up bad","wojak says: i\u2019m not trapped in here with you, you\u2019re trapped with me","wojak says: real ones don\u2019t check the chart","wojak says: cope is a strategy","wojak says: we\u2019re all gonna make it (some of us)","wojak says: steak well done, hands diamond"];
+ var w=document.getElementById('wojakSays'); if(w) w.textContent=says[Math.floor(Math.random()*says.length)];
+})();
 </script>
 </body>
 </html>
