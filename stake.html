@@ -23,7 +23,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 #connectBtn.on{background:transparent;border:1px solid var(--green);color:var(--green)}
 .hero{text-align:center;padding:30px 0 10px}
 .hero img{width:120px;height:120px;border-radius:50%;box-shadow:0 0 40px rgba(82,255,143,.4);margin-bottom:14px}
-.hero .vault{width:100%;max-width:360px;border-radius:20px;box-shadow:0 0 50px rgba(82,255,143,.35);margin-bottom:16px;display:block;margin-inline:auto}
+.hero .vault{width:100%;max-width:460px;border-radius:18px;box-shadow:0 0 60px rgba(157,77,255,.5);margin-bottom:16px;display:block;margin-inline:auto;border:2px solid var(--line)}
 h1{font-family:var(--fh);font-size:clamp(34px,11vw,64px);line-height:.9;color:var(--green);text-shadow:0 0 34px rgba(82,255,143,.5),4px 4px 0 var(--ember2)}
 .tag{color:var(--dim);font-size:14px;margin-top:10px;max-width:560px;margin-inline:auto}
 .notice{background:rgba(255,106,43,.1);border:1px solid var(--ember);color:var(--gold);border-radius:14px;padding:13px 16px;font-size:13px;text-align:center;margin:18px 0}
@@ -71,9 +71,21 @@ input[type=text],input[type=number]{width:100%;background:var(--void);border:1px
 .marq span{display:inline-block;padding:9px 0;font-family:var(--fd);font-size:14px;color:var(--gold);animation:scroll 22s linear infinite}
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 #wojakSays{font-family:var(--fd);color:var(--green);font-size:15px;margin-top:8px;min-height:20px}
+
+/* dumb-funny side decorations (desktop gutters only) */
+.sidefx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;display:none}
+@media(min-width:1180px){.sidefx{display:block}}
+.fx{position:absolute;font-family:var(--fd);font-weight:700;opacity:.55;will-change:transform;user-select:none}
+.fx.emoji{font-size:46px;opacity:.8;filter:drop-shadow(0 0 10px rgba(157,77,255,.4))}
+.fx.tag{font-size:22px;color:var(--green);text-shadow:0 0 12px rgba(157,77,255,.5)}
+.fx.tag.p{color:var(--violet)} .fx.tag.g{color:var(--gold)} .fx.tag.h{color:var(--hot)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-22px) rotate(var(--r,0deg))}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fx.spin{animation:spin 9s linear infinite}
 </style>
 </head>
 <body>
+<div class="sidefx" aria-hidden="true"><span class="fx emoji" style="left:3vw;top:14%;--r:-8deg;animation:bob 4s ease-in-out infinite">🥩</span><span class="fx tag g" style="left:6vw;top:24%;--r:-12deg;animation:bob 5s ease-in-out .3s infinite">GM</span><span class="fx emoji spin" style="left:2vw;top:38%;">💎</span><span class="fx tag p" style="left:5vw;top:50%;--r:8deg;animation:bob 4.5s ease-in-out .6s infinite">HODL</span><span class="fx emoji" style="left:7vw;top:64%;--r:14deg;animation:bob 5.5s ease-in-out infinite">🥩</span><span class="fx tag h" style="left:2vw;top:76%;--r:-6deg;animation:bob 4s ease-in-out .2s infinite">ngmi?</span><span class="fx emoji" style="left:6vw;top:88%;animation:bob 6s ease-in-out infinite">💰</span><span class="fx tag" style="right:5vw;top:12%;--r:10deg;animation:bob 4.8s ease-in-out .4s infinite">COPE</span><span class="fx emoji spin" style="right:3vw;top:22%;">🥩</span><span class="fx tag p" style="right:6vw;top:34%;--r:-10deg;animation:bob 5s ease-in-out infinite">ser pls</span><span class="fx emoji" style="right:2vw;top:46%;--r:6deg;animation:bob 4.2s ease-in-out .5s infinite">💎</span><span class="fx tag g" style="right:7vw;top:58%;--r:-14deg;animation:bob 5.4s ease-in-out infinite">5×</span><span class="fx emoji" style="right:3vw;top:70%;--r:18deg;animation:bob 4s ease-in-out .3s infinite">📄</span><span class="fx tag" style="right:5vw;top:82%;--r:8deg;animation:bob 5s ease-in-out infinite">wagmi</span><span class="fx emoji" style="right:8vw;top:92%;animation:bob 6s ease-in-out infinite">🥩</span></div>
 <div class="bar">
   <a href="/">‹ $MOJAK</a>
   <div class="links">
