@@ -82,6 +82,11 @@ input[type=text],input[type=number]{width:100%;background:var(--void);border:1px
 @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-22px) rotate(var(--r,0deg))}}
 @keyframes spin{to{transform:rotate(360deg)}}
 .fx.spin{animation:spin 9s linear infinite}
+
+/* stake page: MOJAK head cursor */
+body,a,button,.tabBtn,.lock,.btn,input{cursor:url(/assets/stake/cursor-mojak.png) 20 20,auto}
+.steaktrail{position:fixed;pointer-events:none;z-index:9999;font-size:24px;will-change:transform,opacity;animation:steakfade 1s ease-out forwards}
+@keyframes steakfade{0%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-30px) scale(.4) rotate(40deg)}}
 </style>
 </head>
 <body>
@@ -492,6 +497,19 @@ buildLocks(); buildFundPick(); updateMult(); refreshStats();
  var e=document.getElementById('marqTxt'); if(e) e.textContent=(m+m);
  var says=["wojak says: this is financial advice (it\u2019s not)","wojak says: lock it and forget your password","wojak says: down 90%? still up bad","wojak says: i\u2019m not trapped in here with you, you\u2019re trapped with me","wojak says: real ones don\u2019t check the chart","wojak says: cope is a strategy","wojak says: we\u2019re all gonna make it (some of us)","wojak says: steak well done, hands diamond"];
  var w=document.getElementById('wojakSays'); if(w) w.textContent=says[Math.floor(Math.random()*says.length)];
+})();
+</script>
+
+<script>
+(function(){
+ var last=0;
+ window.addEventListener('pointermove',function(e){
+   var now=Date.now(); if(now-last<55) return; last=now;       // throttle
+   var s=document.createElement('span'); s.className='steaktrail'; s.textContent='🥩';
+   s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px';
+   document.body.appendChild(s);
+   setTimeout(function(){ s.remove(); }, 1000);
+ }, {passive:true});
 })();
 </script>
 </body>
