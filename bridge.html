@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MOJAK Bridge — Any Chain, No Wallet</title>
+<meta name="description" content="Bridge directly to Solana, BNB, Sui and more in a few clicks. No wallet connection. No KYC. Fast & smooth."/>
+<link rel="icon" type="image/png" href="/assets/favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0b0614;--bg2:#120a22;--panel:#160c28;--ink:#f3ecff;--dim:#9b86c9;--mojak:#9d4dff;--mojak2:#7b2dff;--violet:#b985ff;--hot:#ff48c4;--acid:#c6ff4d;--line:rgba(157,77,255,.22);--radius:22px;--disp:'Boogaloo',cursive;--body:'Outfit',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(1200px 600px at 50% -10%,#1b0e34 0%,var(--bg) 60%);color:var(--ink);font-family:var(--body);min-height:100vh}
+a{color:inherit;text-decoration:none}
+.display{font-family:var(--disp);letter-spacing:1px}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px 70px}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 4px 8px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-size:24px}
+.brand img{width:34px;height:34px;border-radius:8px}
+.back{font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:8px 15px}
+.back:hover{border-color:var(--mojak);color:var(--ink)}
+.hero{text-align:center;margin:18px 0 22px}
+.hero h1{font-family:var(--disp);font-size:clamp(34px,9vw,52px);line-height:1.02;background:linear-gradient(100deg,var(--violet),var(--mojak),var(--hot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--dim);margin-top:8px;font-size:15px}
+.tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.tag{font-size:12px;font-weight:700;color:var(--violet);background:rgba(157,77,255,.12);border:1px solid var(--line);border-radius:999px;padding:6px 13px}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 20px 60px rgba(123,45,255,.18)}
+.leg{font-size:12px;color:var(--dim);margin:2px 4px 7px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.row{display:flex;gap:10px;align-items:center;background:#0e0720;border:1px solid var(--line);border-radius:16px;padding:12px 13px}
+.row input.amt{flex:1;background:none;border:none;color:var(--ink);font-size:24px;font-family:var(--disp);letter-spacing:.5px;min-width:0}
+.row input.amt:focus{outline:none}
+.row input.amt::placeholder{color:#5c4c80}
+.tokbtn{display:flex;align-items:center;gap:8px;background:#1b0f33;border:1px solid var(--line);border-radius:999px;padding:7px 12px 7px 7px;cursor:pointer;white-space:nowrap;font-weight:700}
+.tokbtn:hover{border-color:var(--mojak)}
+.tokbtn img{width:26px;height:26px;border-radius:50%;background:#241340}
+.tokbtn .net{font-size:10px;color:var(--dim);display:block;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.tokbtn b{font-size:15px}
+.flip{display:flex;justify-content:center;margin:-6px 0}
+.flip button{width:38px;height:38px;border-radius:12px;background:var(--mojak2);border:3px solid var(--bg);color:#fff;font-size:18px;cursor:pointer;transition:transform .15s}
+.flip button:hover{transform:rotate(180deg)}
+.addr{margin-top:12px}
+.addr input{width:100%;background:#0e0720;border:1px solid var(--line);border-radius:14px;padding:13px 14px;color:var(--ink);font-family:var(--body);font-size:14px}
+.addr input:focus{outline:none;border-color:var(--mojak)}
+.rate{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin:11px 4px 0;min-height:16px}
+.go{width:100%;margin-top:14px;border:none;border-radius:16px;padding:16px;font-family:var(--disp);font-size:20px;letter-spacing:1px;color:#fff;background:linear-gradient(100deg,var(--mojak2),var(--mojak),var(--hot));cursor:pointer;transition:transform .12s;box-shadow:0 10px 30px rgba(157,77,255,.45)}
+.go:hover{transform:translateY(-2px)}
+.go:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.note{font-size:11px;color:var(--dim);text-align:center;margin-top:12px;line-height:1.6}
+/* picker modal */
+.modal{position:fixed;inset:0;background:rgba(6,3,14,.78);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:80}
+.modal.on{display:flex}
+.sheet{background:var(--bg2);border:1px solid var(--line);border-radius:22px 22px 0 0;width:100%;max-width:560px;max-height:82vh;display:flex;flex-direction:column;padding:16px}
+.sheet h3{font-family:var(--disp);font-size:22px;margin:2px 2px 10px}
+.sheet input.q{width:100%;background:#0e0720;border:1px solid var(--line);border-radius:14px;padding:13px 14px;color:var(--ink);font-size:15px;margin-bottom:10px}
+.sheet input.q:focus{outline:none;border-color:var(--mojak)}
+.list{overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.coin{display:flex;align-items:center;gap:11px;padding:10px;border-radius:12px;cursor:pointer}
+.coin:hover{background:#1b0f33}
+.coin img{width:30px;height:30px;border-radius:50%;background:#241340}
+.coin .nm{font-weight:700;font-size:14px}
+.coin .nt{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+.coin .tk{margin-left:auto;font-weight:800;color:var(--violet)}
+/* result */
+.result{margin-top:16px;display:none}
+.result.on{display:block}
+.dep{background:#0e0720;border:1px dashed var(--mojak);border-radius:16px;padding:15px;text-align:center}
+.dep .lbl{font-size:12px;color:var(--dim)}
+.dep .big{font-family:var(--disp);font-size:22px;margin:4px 0 10px}
+.dep .qr{width:172px;height:172px;border-radius:12px;background:#fff;margin:0 auto 12px;padding:8px}
+.dep .a{display:flex;gap:8px;align-items:center;background:#160c28;border:1px solid var(--line);border-radius:12px;padding:11px;font-size:12px;word-break:break-all;text-align:left}
+.dep .a button{flex:none;background:var(--mojak2);border:none;color:#fff;border-radius:8px;padding:7px 11px;cursor:pointer;font-weight:700}
+.memo{font-size:12px;color:var(--acid);background:rgba(198,255,77,.08);border:1px solid rgba(198,255,77,.25);border-radius:10px;padding:9px;margin-top:9px}
+.status{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:13px;font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--acid);box-shadow:0 0 10px var(--acid);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.err{color:var(--hot);font-size:13px;text-align:center;margin-top:10px;min-height:16px}
+.spin{width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--mojak);border-radius:50%;display:inline-block;animation:s .7s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/"><img src="/assets/logo.png" alt="MOJAK"/>MOJAK</a>
+    <a class="back" href="/">← home</a>
+  </header>
+
+  <div class="hero">
+    <h1>Bridge Any Chain</h1>
+    <p>Solana, BNB, Sui, Ethereum, Monad &amp; more — in a few clicks.</p>
+    <div class="tags"><span class="tag">⚡ No wallet connect</span><span class="tag">🕶 No KYC</span><span class="tag">🚀 Fast &amp; smooth</span></div>
+  </div>
+
+  <div class="card">
+    <div class="leg">You send</div>
+    <div class="row">
+      <input class="amt" id="fromAmt" inputmode="decimal" placeholder="0.0"/>
+      <div class="tokbtn" id="fromTok" onclick="openPick('from')"><img id="fromImg"/><span><b id="fromTk">—</b><span class="net" id="fromNet"></span></span><span style="color:var(--dim)">▾</span></div>
+    </div>
+    <div class="flip"><button onclick="flip()" title="flip">⇅</button></div>
+    <div class="leg">You receive (estimated)</div>
+    <div class="row">
+      <input class="amt" id="toAmt" placeholder="0.0" readonly/>
+      <div class="tokbtn" id="toTok" onclick="openPick('to')"><img id="toImg"/><span><b id="toTk">—</b><span class="net" id="toNet"></span></span><span style="color:var(--dim)">▾</span></div>
+    </div>
+    <div class="addr"><input id="dest" spellcheck="false" placeholder="Your destination address"/></div>
+    <div class="rate" id="rate"></div>
+    <button class="go" id="go" onclick="createOrder()">Bridge now</button>
+    <div class="err" id="err"></div>
+    <div class="note">Non-custodial · powered by ChangeNOW. You send funds from any wallet or exchange — nothing to connect. Network fees + provider spread apply.</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="dep">
+      <div class="lbl">Send exactly</div>
+      <div class="big"><span id="sendAmt"></span> <span id="sendTk"></span></div>
+      <img class="qr" id="qr" alt="deposit QR"/>
+      <div class="a"><span id="payAddr"></span><button onclick="copyAddr()">Copy</button></div>
+      <div class="memo" id="memo" style="display:none"></div>
+      <div class="status"><span class="dot"></span><span id="statusTxt">Waiting for your deposit…</span></div>
+      <div class="note" style="margin-top:10px">Order <span id="oid"></span> · this page updates automatically. Keep it open until complete.</div>
+    </div>
+  </div>
+</div>
+
+<!-- token picker -->
+<div class="modal" id="modal" onclick="if(event.target===this)closePick()">
+  <div class="sheet">
+    <h3 id="pickTitle">Select asset</h3>
+    <input class="q" id="search" placeholder="Search name, ticker or chain…" oninput="renderList()"/>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<script>
+const $=(id)=>document.getElementById(id);
+const FEATURED=['sol','bnb','sui','eth','mon','btc','usdt','usdc','trx','matic','arbitrum','base','avax'];
+let COINS=[], FROM=null, TO=null, pickSide='from', estTimer=null, pollTimer=null;
+
+function imgFor(c){return c.image||'/assets/logo.png';}
+function setTok(side,c){
+  if(side==='from'){FROM=c;$('fromTk').textContent=c.ticker.toUpperCase();$('fromNet').textContent=c.network;$('fromImg').src=imgFor(c);}
+  else{TO=c;$('toTk').textContent=c.ticker.toUpperCase();$('toNet').textContent=c.network;$('toImg').src=imgFor(c);}
+  estimate();
+}
+function flip(){const f=FROM,t=TO;if(f)setTok('to',f);if(t)setTok('from',t);}
+
+async function loadCoins(){
+  try{
+    const r=await fetch('/api/cn/currencies');const d=await r.json();
+    COINS=(Array.isArray(d)?d:[]).filter(c=>c.ticker&&c.network);
+    if(!COINS.length){$('err').textContent='Could not load assets (is the bridge configured?).';return;}
+    const pick=(tk)=>COINS.find(c=>c.ticker===tk&&(c.buy||c.sell))||COINS.find(c=>c.ticker===tk);
+    setTok('from',pick('mon')||pick('eth')||COINS[0]);
+    setTok('to',pick('sol')||pick('bnb')||COINS[1]);
+  }catch(e){$('err').textContent='Could not load assets.';}
+}
+function openPick(side){pickSide=side;$('pickTitle').textContent=side==='from'?'You send':'You receive';$('search').value='';renderList();$('modal').classList.add('on');$('search').focus();}
+function closePick(){$('modal').classList.remove('on');}
+function renderList(){
+  const q=($('search').value||'').toLowerCase().trim();
+  let arr=COINS;
+  if(q) arr=COINS.filter(c=>c.ticker.toLowerCase().includes(q)||(c.name||'').toLowerCase().includes(q)||(c.network||'').toLowerCase().includes(q));
+  else arr=[...COINS].sort((a,b)=>(FEATURED.indexOf(a.ticker)+1||99)-(FEATURED.indexOf(b.ticker)+1||99));
+  const list=$('list');list.innerHTML='';
+  arr.slice(0,80).forEach(c=>{
+    const el=document.createElement('div');el.className='coin';
+    el.innerHTML='<img src="'+imgFor(c)+'" onerror="this.src=\'/assets/logo.png\'"/><div><div class="nm">'+(c.name||c.ticker)+'</div><div class="nt">'+c.network+'</div></div><div class="tk">'+c.ticker.toUpperCase()+'</div>';
+    el.onclick=()=>{setTok(pickSide,c);closePick();};
+    list.appendChild(el);
+  });
+}
+function estimate(){
+  $('rate').textContent='';$('toAmt').value='';
+  const amt=parseFloat($('fromAmt').value);
+  if(!FROM||!TO||!(amt>0))return;
+  clearTimeout(estTimer);
+  estTimer=setTimeout(async()=>{
+    $('rate').innerHTML='<span class="spin"></span> estimating…';
+    try{
+      const p=new URLSearchParams({fromCurrency:FROM.ticker,toCurrency:TO.ticker,fromNetwork:FROM.network,toNetwork:TO.network,fromAmount:String(amt)});
+      const r=await fetch('/api/cn/estimate?'+p);const d=await r.json();
+      if(d.toAmount||d.estimatedAmount){
+        const out=d.toAmount||d.estimatedAmount;
+        $('toAmt').value=(+out).toPrecision(8).replace(/\.?0+$/,'');
+        $('rate').innerHTML='<span>≈ rate locked at confirmation</span><span>min '+(d.minAmount||'—')+'</span>';
+      }else{$('rate').textContent=d.message||d.error||'no route for this pair';}
+    }catch(e){$('rate').textContent='estimate failed';}
+  },450);
+}
+$('fromAmt').addEventListener('input',estimate);
+
+async function createOrder(){
+  $('err').textContent='';
+  const amt=parseFloat($('fromAmt').value), dest=$('dest').value.trim();
+  if(!FROM||!TO)return $('err').textContent='Pick both assets.';
+  if(!(amt>0))return $('err').textContent='Enter an amount.';
+  if(dest.length<16)return $('err').textContent='Enter your destination address.';
+  $('go').disabled=true;$('go').innerHTML='<span class="spin"></span> Creating order…';
+  try{
+    const r=await fetch('/api/cn/create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fromCurrency:FROM.ticker,toCurrency:TO.ticker,fromNetwork:FROM.network,toNetwork:TO.network,fromAmount:String(amt),address:dest})});
+    const d=await r.json();
+    if(d.error||!d.payinAddress){$('err').textContent=d.message||d.error||'Could not create order.';return;}
+    showDeposit(d);
+  }catch(e){$('err').textContent='Network error — try again.';}
+  finally{$('go').disabled=false;$('go').textContent='Bridge now';}
+}
+function showDeposit(d){
+  $('sendAmt').textContent=d.fromAmount||$('fromAmt').value;
+  $('sendTk').textContent=FROM.ticker.toUpperCase();
+  $('payAddr').textContent=d.payinAddress;
+  $('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=320x320&data='+encodeURIComponent(d.payinAddress);
+  $('oid').textContent=d.id;
+  if(d.payinExtraId){$('memo').style.display='block';$('memo').textContent='⚠ Include MEMO / Tag: '+d.payinExtraId+' — or funds may be lost.';}
+  $('result').classList.add('on');
+  $('result').scrollIntoView({behavior:'smooth'});
+  poll(d.id);
+}
+function copyAddr(){navigator.clipboard.writeText($('payAddr').textContent);}
+const LABELS={new:'Waiting for your deposit…',waiting:'Waiting for your deposit…',confirming:'Confirming on-chain…',exchanging:'Bridging…',sending:'Sending to your address…',finished:'✅ Done! Funds sent.',failed:'❌ Exchange failed',refunded:'↩ Refunded',verifying:'Verifying…'};
+function poll(id){
+  clearInterval(pollTimer);
+  const tick=async()=>{
+    try{const r=await fetch('/api/cn/status?id='+encodeURIComponent(id));const d=await r.json();
+      $('statusTxt').textContent=LABELS[d.status]||d.status||'…';
+      if(['finished','failed','refunded'].includes(d.status))clearInterval(pollTimer);
+    }catch(e){}
+  };
+  tick();pollTimer=setInterval(tick,11000);
+}
+loadCoins();
+</script>
+</body>
+</html>
