@@ -44,12 +44,14 @@ const EXPLORER = "https://monadscan.com";
 const $ = (id) => document.getElementById(id);
 const logEl = $('log');
 let account = null;
+function getProvider(){ const e=window.ethereum; if(!e) return null; if(e.providers&&e.providers.length){ return e.providers.find(p=>p&&p.isMetaMask)||e.providers[0]; } return e; }
+let prov = getProvider();
 function log(msg, cls){ const s=document.createElement('div'); if(cls)s.className=cls; s.innerHTML=msg; logEl.appendChild(s); logEl.scrollTop=logEl.scrollHeight; }
 const isAddr = (a)=>/^0x[0-9a-fA-F]{40}$/.test(a);
 const enc = (a)=>a.toLowerCase().replace(/^0x/,'').padStart(64,'0');
 
 async function ensureChain(){
-  const eth = window.ethereum;
+  const eth = prov;
   const cur = await eth.request({method:'eth_chainId'});
   if(cur===CHAIN_HEX) return;
   try{
@@ -67,8 +69,11 @@ async function ensureChain(){
 
 $('connect').onclick = async ()=>{
   try{
-    if(!window.ethereum){ log('No injected wallet found (install MetaMask / use a wallet browser).','err'); return; }
-    const accts = await window.ethereum.request({method:'eth_requestAccounts'});
+    prov = getProvider();
+    if(!prov){ log('No injected wallet found (install MetaMask / use a wallet browser).','err'); return; }
+    const wname = prov.isMetaMask?'MetaMask':(prov.isRabby?'Rabby':(prov.isPhantom?'Phantom':'injected wallet'));
+    log('wallet detected: '+wname,'muted');
+    const accts = await prov.request({method:'eth_requestAccounts'});
     account = accts[0];
     await ensureChain();
     log('connected: <code>'+account+'</code> on Monad','ok');
@@ -87,14 +92,16 @@ $('deploy').onclick = async ()=>{
     $('deploy').disabled=true;
     log('sending deploy tx (manual gas, bypassing estimator)…','muted');
     // raw eth_sendTransaction with manual gas — avoids Monad ethers "could not coalesce" estimator bug
-    const txHash = await window.ethereum.request({method:'eth_sendTransaction',params:[{
-      from: account, data: initcode, gas: '0x5B8D80' // 6,000,000
-    }]});
+    let gasPrice; try{ gasPrice = await prov.request({method:'eth_gasPrice'}); }catch(_){}
+    const txParams = { from: account, data: initcode, value:'0x0', gas:'0x5B8D80' };
+    if(gasPrice) txParams.gasPrice = gasPrice;
+    log('initcode '+(((initcode.length-2)/2)|0)+' bytes; gas 6,000,000'+(gasPrice?(' ; gasPrice '+gasPrice):''),'muted');
+    const txHash = await prov.request({method:'eth_sendTransaction',params:[txParams]});
     log('tx: <a href="'+EXPLORER+'/tx/'+txHash+'" target="_blank">'+txHash+'</a>','ok');
     log('waiting for receipt…','muted');
     let rcpt=null;
     for(let i=0;i<120;i++){
-      rcpt = await window.ethereum.request({method:'eth_getTransactionReceipt',params:[txHash]});
+      rcpt = await prov.request({method:'eth_getTransactionReceipt',params:[txHash]});
       if(rcpt) break; await new Promise(r=>setTimeout(r,2000));
     }
     if(!rcpt) return log('no receipt after ~4min — check the tx on MonadScan','err');
@@ -103,6 +110,6 @@ $('deploy').onclick = async ()=>{
     log('✅ DEPLOYED: <a href="'+EXPLORER+'/address/'+addr+'" target="_blank"><code>'+addr+'</code></a>','ok');
     log('──────── VERIFY PAYLOAD (paste this whole line back into chat) ────────');
     log('VERIFY '+addr+' token='+token+' dev='+dev,'ok');
-  }catch(e){ log('deploy failed: '+(e.message||JSON.stringify(e)),'err'); $('deploy').disabled=false; }
+  }catch(e){ log('deploy failed: '+((e&&e.message)||JSON.stringify(e))+((e&&e.code!=null)?(' [code '+e.code+']'):''),'err'); if(e&&e.data) log('detail: '+JSON.stringify(e.data),'err'); $('deploy').disabled=false; }
 };
 </script></body></html>
