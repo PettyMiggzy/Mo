@@ -1,5 +1,5 @@
 'use strict';
-const ALLOWED = ['mojak.xyz', 'monjak.fun', 'localhost', 'vercel.app'];
+const ALLOWED = ['mojakcto.xyz', 'mojak.xyz', 'monjak.fun', 'localhost', 'vercel.app'];
 function originAllowed(req) {
   const o = req.headers.origin || req.headers.referer || '';
   if (!o) return true;
