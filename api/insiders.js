@@ -29,16 +29,30 @@ async function rpcBatch(calls) {
 async function buildInsiders(token) {
   token = L.lc(token);
 
-  // 1) full-ish transfer history, oldest first (captures launch distribution)
+  // 1) transfer history — launch window (asc) + recent window (desc) so we capture
+  //    BOTH early snipers and wallets that accumulated later. balanceOf gives the
+  //    true current balance; we only need the full SET of addresses that ever held.
   let xfers = [];
   let partial = false;
-  for (let p = 1; p <= 4; p++) {
-    let r = [];
-    try { r = await L.esCall({ module: 'account', action: 'tokentx', contractaddress: token, page: String(p), offset: '1000', sort: 'asc' }); }
-    catch (e) { partial = true; break; }
-    xfers = xfers.concat(r);
-    if (r.length < 1000) break;
-    if (p === 4) partial = true;
+  async function pullDir(sort, maxPages) {
+    const out = [];
+    for (let p = 1; p <= maxPages; p++) {
+      let r = [];
+      try { r = await L.esCall({ module: 'account', action: 'tokentx', contractaddress: token, page: String(p), offset: '10000', sort }); }
+      catch (e) { partial = true; break; }
+      out.push(...r);
+      if (r.length < 10000) return out;     // exhausted this direction
+      if (p === maxPages) partial = true;    // more exists beyond what we pulled
+    }
+    return out;
+  }
+  const _asc = await pullDir('asc', 2);    // up to 20k from launch
+  const _desc = await pullDir('desc', 1);  // up to 10k most recent
+  const _seen = new Set();
+  for (const t of [..._asc, ..._desc]) {
+    const k = (t.hash || '') + '-' + t.from + '-' + t.to + '-' + t.value;
+    if (_seen.has(k)) continue;
+    _seen.add(k); xfers.push(t);
   }
   if (!xfers.length) {
     const e = new Error('No token transfers found — is this a token contract address?');
