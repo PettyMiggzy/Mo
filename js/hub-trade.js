@@ -23,10 +23,9 @@ const EXPLORER    = 'https://monadexplorer.com';
 const MONORAIL = {
   QUOTE:  'https://pathfinder.monorail.xyz/v4/quote',
   TOKENS: 'https://api.monorail.xyz/v2/tokens',
-  // ⚠️ MOJAK App ID — register one at Monorail to capture the 1% swap fee to a
-  // MOJAK wallet. EMPTY = swaps work with NO fee (does NOT fund anyone else).
-  // Paste your MOJAK App ID here to turn on the 1% flywheel.
-  APP_ID: '',
+  // King's Monorail referrer/App ID — account-level, 1% fee to King's wallet on
+  // any project. Same ID used across the ecosystem (chogi etc.).
+  APP_ID: '1176408161625',
 };
 
 const RPC_URLS = ['https://rpc.monad.xyz'];
