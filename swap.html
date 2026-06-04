@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SWAP · Any token on Monad · Powered by Monorail</title>
+<meta name="description" content="Universal Monad swap — any token ↔ any token, best-price routing via Monorail. Trade $MOJAK and anything on Monad.">
+<meta property="og:title" content="🔁 SWAP · Any Monad token · $MOJAK">
+<meta property="og:description" content="Universal Monad swap aggregator. Any token to any token. Powered by Monorail.">
+<meta property="og:image" content="https://www.mojakcto.xyz/assets/logo.png">
+<meta property="og:url" content="https://www.mojakcto.xyz/swap">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:domain" content="mojakcto.xyz">
+<meta name="twitter:url" content="https://www.mojakcto.xyz/swap">
+<meta name="twitter:image" content="https://www.mojakcto.xyz/assets/logo.png">
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<meta name="theme-color" content="#9d4dff">
+
+
+<link rel="apple-touch-icon" href="/assets/logo.png">
+
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MOJAK">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Space+Grotesk:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pink:#9d4dff;
+  --pink-glow:rgba(157,77,255,.5);
+  --purple:#b985ff;
+  --gold:#c6ff4d;
+  --green:#4ADE80;
+  --red:#ff4d6d;
+  --fire:#ff48c4;
+  --fire-glow:rgba(255,72,196,.55);
+  --bg:#0b0614;
+  --ink:#f3ecff;
+  --muted:rgba(255,233,244,.6);
+  --panel:rgba(8,0,18,.55);
+  --panel-line:rgba(157,77,255,.4);
+}
+html,body{overflow-x:hidden;}
+body{min-height:100vh;background:var(--bg);font-family:'Space Grotesk',system-ui,sans-serif;color:var(--ink);position:relative;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse at 50% 0%,rgba(157,77,255,.16),transparent 60%),radial-gradient(ellipse at 100% 80%,rgba(185,133,255,.16),transparent 55%),radial-gradient(ellipse at 0% 60%,rgba(255,72,196,.1),transparent 50%);}
+body::after{content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:repeating-linear-gradient(0deg,rgba(157,77,255,.025) 0,rgba(157,77,255,.025) 1px,transparent 1px,transparent 4px);}
+
+.wrap{max-width:560px;margin:0 auto;padding:18px 18px 60px;}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;margin-bottom:24px;border-bottom:1px solid rgba(157,77,255,.18);}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);}
+.brand-img{width:42px;height:42px;border-radius:50%;border:2px solid var(--pink);overflow:hidden;box-shadow:0 0 18px var(--pink-glow);background:#000;}
+.brand-img img{width:100%;height:100%;object-fit:cover;}
+.brand-text .n{font-family:'Boogaloo',cursive;font-size:16px;letter-spacing:2.5px;color:#fff;}
+.brand-text .s{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--pink);margin-top:1px;}
+.back{font-family:'Boogaloo',cursive;font-size:11px;letter-spacing:2px;text-decoration:none;color:#fff;padding:9px 14px;border:1.5px solid rgba(255,255,255,.18);border-radius:8px;}
+.back:hover{border-color:var(--pink);box-shadow:0 0 14px var(--pink-glow);}
+
+.hero{text-align:center;margin:14px 0 22px;}
+.hero h1{font-family:'Boogaloo',cursive;font-size:clamp(34px,8vw,58px);letter-spacing:3px;line-height:.95;background:linear-gradient(135deg,var(--pink) 0%,var(--purple) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 22px var(--pink-glow));margin-bottom:10px;}
+.hero p{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2.5px;color:var(--muted);}
+
+.meter-strip{
+  margin-bottom:18px;padding:14px 18px;
+  background:linear-gradient(180deg,rgba(255,72,196,.08),rgba(157,77,255,.04));
+  border:1.5px solid rgba(255,72,196,.32);border-radius:14px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+}
+.meter-strip .l{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--fire);}
+.meter-strip .v{font-family:'Boogaloo',cursive;font-size:20px;letter-spacing:1.5px;color:var(--fire);text-shadow:0 0 14px var(--fire-glow);}
+.meter-strip .v small{font-size:.45em;letter-spacing:2px;color:var(--ink);margin-left:4px;}
+.meter-strip .pct{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--gold);font-weight:700;}
+
+.card{
+  padding:22px 20px 20px;
+  background:var(--panel);
+  border:1.5px solid var(--panel-line);border-radius:18px;
+  box-shadow:0 0 36px rgba(157,77,255,.12),inset 0 0 60px rgba(157,77,255,.04);
+}
+
+.connect-pill{display:flex;align-items:center;gap:10px;justify-content:center;padding:11px 14px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;margin-bottom:16px;cursor:pointer;border:1px solid transparent;}
+.connect-pill.off{background:rgba(255,77,109,.08);border-color:rgba(255,77,109,.3);color:#ff8898;}
+.connect-pill.on{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.35);color:var(--green);}
+.connect-pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;}
+
+.swap-row{background:rgba(8,0,18,.6);border:1px solid var(--panel-line);border-radius:12px;padding:14px;margin-bottom:6px;}
+.swap-row .lbl-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;}
+.swap-row .bal{color:var(--gold);cursor:pointer;}
+.swap-row .bal:hover{color:#fff;}
+.swap-row .input-row{display:flex;align-items:center;gap:10px;}
+.swap-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;min-width:0;width:100%;}
+.swap-row input::placeholder{color:#42305a;}
+
+.tk-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(157,77,255,.12);border:1.5px solid rgba(157,77,255,.35);border-radius:10px;cursor:pointer;flex-shrink:0;transition:.15s;}
+.tk-btn:hover{background:rgba(157,77,255,.2);border-color:var(--pink);box-shadow:0 0 12px var(--pink-glow);}
+.tk-btn .tk-emoji{width:26px;height:26px;border-radius:50%;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tk-btn .tk-emoji img{width:100%;height:100%;object-fit:cover;}
+.tk-btn .tk-sym{font-family:'Boogaloo',cursive;font-size:13px;letter-spacing:1.5px;color:#fff;}
+.tk-btn .tk-caret{font-size:10px;color:var(--pink);opacity:.7;}
+
+.flip-btn{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:rgba(185,133,255,.18);border:1.5px solid rgba(185,133,255,.4);color:#fff;font-size:20px;margin:-3px auto;cursor:pointer;position:relative;z-index:1;transition:.25s;}
+.flip-btn:hover{transform:rotate(180deg);background:rgba(185,133,255,.3);}
+
+.slip-row{display:flex;align-items:center;gap:6px;margin:14px 0 8px;flex-wrap:wrap;}
+.slip-row span:first-child{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);margin-right:4px;}
+.pill{padding:6px 12px;border-radius:8px;background:rgba(157,77,255,.08);border:1px solid rgba(157,77,255,.25);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:.15s;}
+.pill:hover{border-color:var(--pink);}
+.pill.active{background:var(--pink);color:#fff;box-shadow:0 0 12px var(--pink-glow);border-color:var(--pink);}
+
+.details{margin-top:14px;padding:14px;background:rgba(8,0,18,.55);border:1px solid rgba(185,133,255,.25);border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:11px;}
+.details .row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;color:var(--muted);}
+.details .row b{color:#fff;font-weight:700;}
+.details .row.fire b{color:var(--fire);}
+.details .row.gold b{color:var(--gold);}
+
+#impactWarn{margin-top:10px;padding:12px 14px;border-radius:10px;border:1px solid;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;letter-spacing:.3px;}
+
+.action-btn{display:block;width:100%;margin-top:14px;padding:16px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--pink) 0%,var(--fire) 100%);color:#fff;font-family:'Boogaloo',cursive;font-size:15px;letter-spacing:2.5px;cursor:pointer;box-shadow:0 0 24px var(--pink-glow);transition:.15s;}
+.action-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 0 32px var(--pink-glow),0 0 32px var(--fire-glow);}
+.action-btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.3);}
+
+.status{margin-top:12px;padding:11px 14px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3px;display:none;line-height:1.5;}
+.status.show{display:block;}
+.status.info{background:rgba(185,133,255,.1);border:1px solid rgba(185,133,255,.3);color:#d8b4fe;}
+.status.success{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3);color:var(--green);}
+.status.error{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.3);color:#ff8898;}
+.status a{color:inherit;text-decoration:underline;}
+
+.note{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.5px;line-height:1.6;color:var(--muted);text-align:center;}
+.note .warn{color:var(--fire);}
+
+footer{margin-top:30px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:1px;line-height:1.7;}
+footer a{color:var(--muted);text-decoration:none;}
+footer a:hover{color:var(--pink);}
+.credit-pill{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:6px 12px;background:rgba(157,77,255,.08);border:1px solid rgba(157,77,255,.25);border-radius:50px;color:var(--ink);text-decoration:none;font-size:10px;letter-spacing:1.5px;}
+.credit-pill:hover{border-color:var(--pink);box-shadow:0 0 10px var(--pink-glow);}
+
+/* ──────── TOKEN PICKER MODAL ──────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:9999;display:none;align-items:flex-start;justify-content:center;padding:60px 18px 18px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal{width:100%;max-width:480px;background:#120420;border:1.5px solid var(--panel-line);border-radius:18px;box-shadow:0 0 60px rgba(157,77,255,.25);padding:18px;}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.modal-head h3{font-family:'Boogaloo',cursive;font-size:16px;letter-spacing:2px;color:#fff;}
+.modal-close{background:none;border:none;color:var(--ink);font-size:24px;cursor:pointer;padding:0 4px;line-height:1;}
+.modal-close:hover{color:var(--pink);}
+.search-input{width:100%;padding:12px 14px;background:rgba(8,0,18,.6);border:1.5px solid var(--panel-line);border-radius:10px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;margin-bottom:14px;}
+.search-input:focus{border-color:var(--pink);}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:2px;color:var(--muted);margin:14px 0 8px;text-transform:uppercase;}
+.shortcuts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.shortcut{display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(157,77,255,.08);border:1px solid rgba(157,77,255,.25);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#fff;cursor:pointer;transition:.15s;}
+.shortcut:hover{background:rgba(157,77,255,.18);border-color:var(--pink);}
+.shortcut .ic{width:18px;height:18px;border-radius:50%;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.shortcut .ic img{width:100%;height:100%;object-fit:cover;}
+.token-list{max-height:340px;overflow-y:auto;}
+.token-row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer;transition:.12s;}
+.token-row:hover{background:rgba(157,77,255,.08);}
+.token-row .ic{width:34px;height:34px;border-radius:50%;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.token-row .ic img{width:100%;height:100%;object-fit:cover;}
+.token-row .meta{flex:1;min-width:0;}
+.token-row .sym{font-family:'Boogaloo',cursive;font-size:13px;letter-spacing:1.2px;color:#fff;}
+.token-row .name{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.token-row .addr{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(157,77,255,.6);margin-top:1px;}
+.token-empty{padding:20px;text-align:center;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<div class="topbar">
+  <a href="/" class="brand">
+    <div class="brand-img"><img src="/assets/logo.png" alt="MOJAK"></div>
+    <div class="brand-text"><div class="n">MOJAK</div><div class="s">STAKE THAT MOJAK</div></div>
+  </a>
+  <a href="/" class="back">← HOME</a>
+</div>
+
+<section class="hero">
+  <h1>🔁 SWAP</h1>
+  <p>ANY MONAD TOKEN ↔ ANY MONAD TOKEN · BEST PRICE VIA MONORAIL</p>
+</section>
+
+<div class="meter-strip">
+  <div>
+    <div class="l">⚡ POWERED BY</div>
+    <div class="v"><span id="engineBurned">Monorail</span><small>AGGREGATOR</small></div>
+  </div>
+  <div style="text-align:right;">
+    <div class="l">FEE</div>
+    <div class="pct">0% · best price</div>
+  </div>
+</div>
+
+<div class="card">
+
+  <div id="connectPill" class="connect-pill off">
+    <span class="dot"></span>
+    <span id="connectText">WALLET NOT CONNECTED · TAP BELOW</span>
+  </div>
+
+  <div class="swap-row">
+    <div class="lbl-row">
+      <span>YOU PAY</span>
+      <span class="bal" id="balIn">balance: —</span>
+    </div>
+    <div class="input-row">
+      <input type="text" id="amountIn" placeholder="0.0" inputmode="decimal" autocomplete="off">
+      <button class="tk-btn" id="pickIn" type="button">
+        <span class="tk-emoji" id="emojiIn"><img src="/monad-logo.png" alt="MON"></span>
+        <span class="tk-sym" id="tokenIn">MON</span>
+        <span class="tk-caret">▼</span>
+      </button>
+    </div>
+  </div>
+
+  <button class="flip-btn" id="flipBtn" type="button" title="Flip direction">⇅</button>
+
+  <div class="swap-row">
+    <div class="lbl-row">
+      <span>YOU RECEIVE (est.)</span>
+      <span class="bal" id="balOut">balance: —</span>
+    </div>
+    <div class="input-row">
+      <input type="text" id="amountOut" placeholder="0.0" readonly>
+      <button class="tk-btn" id="pickOut" type="button">
+        <span class="tk-emoji" id="emojiOut"><img src="/assets/logo.png" alt="MOJAK"></span>
+        <span class="tk-sym" id="tokenOut">MOJAK</span>
+        <span class="tk-caret">▼</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="slip-row">
+    <span>SLIPPAGE</span>
+    <div class="pill" data-slip="50">0.5%</div>
+    <div class="pill" data-slip="100">1%</div>
+    <div class="pill active" data-slip="300">3%</div>
+    <div class="pill" data-slip="500">5%</div>
+    <div class="pill" data-slip="1000">10%</div>
+  </div>
+
+  <div id="impactWarn" style="display:none;"></div>
+
+  <div class="details" id="detailsBox" style="display:none;">
+    <div class="row"><span>route</span><b id="dRoute">—</b></div>
+    <div class="row"><span>min received</span><b id="dMin">—</b></div>
+    <div class="row gold"><span>price impact</span><b id="dImpact">—</b></div>
+    <div class="row fire"><span>🔥 fee → burn engine</span><b id="dFee">1%</b></div>
+  </div>
+
+  <button class="action-btn" id="actionBtn" disabled>CONNECT WALLET</button>
+
+  <div class="status" id="status"></div>
+
+  <p class="note">Powered by <span class="warn">Monorail</span> aggregator — routes every trade across Monad DEXes for the best price. Any token ↔ any token. <span class="warn">No swap fee.</span></p>
+</div>
+
+<footer>
+  <div>monad mainnet · supply only goes down</div>
+  <div style="margin-top:6px;">
+    <a href="/hub">/hub</a> ·
+    <a href="/payroll">/payroll</a> ·
+    <a href="/burn">/burn</a> ·
+    <a href="/lab">/lab</a> ·
+    <a href="https://x.com/mojakonmonad" target="_blank" rel="noopener">X</a>
+  </div>
+  <a href="https://x.com/miggzyonbase" target="_blank" rel="noopener" class="credit-pill">
+    <span style="font-size:14px;">👑</span>
+    <span>A KING PETTY BUILD</span>
+  </a>
+</footer>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">SELECT TOKEN</h3>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <input type="text" id="searchInput" class="search-input" placeholder="Search symbol / name / paste contract address" autocomplete="off">
+    <div class="section-label">COMMON TOKENS</div>
+    <div class="shortcuts" id="shortcuts"></div>
+    <div class="section-label" id="resultsLabel">ECOSYSTEM</div>
+    <div class="token-list" id="tokenList"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<script src="/js/safety-disclaimer.js" defer></script>
+<script src="/js/wallet-helper.js" defer></script>
+<script src="/js/connect-pill.js" defer></script>
+<script src="/js/blocklist.js" defer></script>
+<script src="/js/hub-trade.js"></script>
+<script>
+(function(){
+  'use strict';
+  if (!window.ChogiTrade){ console.error('ChogiTrade engine missing'); return; }
+  const T = window.ChogiTrade;
+  const NATIVE = T.NATIVE_ZERO;
+  const $ = id => document.getElementById(id);
+
+  // Curated ecosystem + popular tokens. Picker also accepts any pasted
+  // contract address via the search box (resolved via tokenInfo on-chain).
+  const KNOWN = [
+    { address: NATIVE, symbol: 'MON',    name: 'Monad', logo:'/monad-logo.png', decimals: 18 },
+    { address: '0x84ea11d047a8bb23149a2d79c3b14ab5b5907777', symbol:'MOJAK',  name:'MOJAK · Stake That Mojak', logo:'/assets/logo.png', decimals: 18 },
+    { address: '0x3bd359c1119da7da1d913d1c4d2b7c461115433a', symbol:'WMON',   name:'Wrapped MON',               logo:'https://monorail-static.fra1.digitaloceanspaces.com/tokens/wmon.svg', decimals: 18 },
+    { address: '0x5e1b1a14c8758104b8560514e94ab8320e587777', symbol:'CHOG',   name:'Chog',                      logo:'/chogi.png', decimals: 18 },
+    { address: '0xb744f5cdb792d8187640214c4a1c9ace29af7777', symbol:'MONSHI', name:'Monshi',                    logo:'https://storage.nadapp.net/coin/bdf23c46-ccd6-447d-b3ed-d84a911aae7a', decimals: 18 },
+    { address: '0xde22b2d5b92364fec7065c638ad82509949f7777', symbol:'MOYAKI', name:'Moyaki — the Moyaking',     logo:'https://storage.nadapp.net/coin/a12e769e-bd61-491e-8e28-6b4acf3ba2da', decimals: 18 },
+  ];
+  const SHORTCUT_SYMBOLS = ['MON','MOJAK','WMON','MONSHI','MOYAKI'];
+
+  const STATE = {
+    from: KNOWN[0],
+    to:   KNOWN[1],
+    account: null,
+    slipBps: 300,
+    quote: null,
+    quoteSeq: 0,
+    pickingFor: null,
+  };
+
+  // Pre-fill from URL params: ?from=<addr|symbol>&to=<addr|symbol>
+  // Lets external sites deep-link "Buy $MOYAKI" → /swap?to=0xDe22...
+  // Accepts either a contract address or a symbol from KNOWN (case-insensitive).
+  function resolveParamToken(raw){
+    if (!raw) return null;
+    const s = String(raw).trim();
+    // address?
+    if (/^0x[a-f0-9]{40}$/i.test(s)){
+      const lc = s.toLowerCase();
+      const k = KNOWN.find(x => x.address.toLowerCase() === lc);
+      if (k) return k;
+      // not in KNOWN — return a minimal record; logo + decimals get
+      // resolved later via Monorail / tokenInfo if needed.
+      return { address: lc, symbol: 'TOKEN', name: 'Custom token', logo: null, decimals: 18 };
+    }
+    // symbol match
+    const up = s.toUpperCase();
+    const k = KNOWN.find(x => (x.symbol||'').toUpperCase() === up);
+    return k || null;
+  }
+  (function applyUrlParams(){
+    try{
+      const p = new URLSearchParams(window.location.search);
+      const fromParam = resolveParamToken(p.get('from'));
+      const toParam   = resolveParamToken(p.get('to'));
+      if (fromParam) STATE.from = fromParam;
+      if (toParam)   STATE.to   = toParam;
+      // If both ended up the same, leave defaults to avoid an invalid pair
+      if (STATE.from.address.toLowerCase() === STATE.to.address.toLowerCase()){
+        STATE.from = KNOWN[0];
+        STATE.to   = KNOWN[1];
+      }
+      // For unresolved (custom CA) tokens, lazy-fetch metadata in the
+      // background so the symbol + logo appear within ~1s of page load
+      // instead of saying "TOKEN".
+      [STATE.from, STATE.to].forEach(async (tok) => {
+        if (tok.symbol === 'TOKEN' && tok.address !== NATIVE){
+          try{
+            const [info, mono] = await Promise.all([
+              T.tokenInfo(tok.address),
+              fetch('https://api.monorail.xyz/v2/token/' + tok.address).then(r => r.ok ? r.json() : null).catch(()=>null),
+            ]);
+            tok.symbol   = info.symbol || tok.symbol;
+            tok.name     = info.name   || tok.name;
+            tok.decimals = info.decimals || 18;
+            tok.logo     = (mono && mono.image_uri) || null;
+            paintPickers();
+          }catch(e){ /* leave generic */ }
+        }
+      });
+    }catch(e){ /* malformed query → fall through to defaults */ }
+  })();
+
+  function fmt(n){
+    if (n == null || isNaN(n)) return '—';
+    const v = Number(n);
+    if (v === 0) return '0';
+    if (v < 0.0001) return v.toExponential(2);
+    if (v < 1) return v.toFixed(6);
+    if (v < 1000) return v.toFixed(4);
+    return v.toLocaleString('en-US', {maximumFractionDigits: 2});
+  }
+  function shortAddr(a){ return a ? a.slice(0,6)+'…'+a.slice(-4) : ''; }
+  function tokenLogo(tok){
+    if (tok.logo){
+      // onerror falls back to the letter chip if the image fails to load
+      return '<img src="' + tok.logo + '" alt="' + (tok.symbol||'?') + '" '
+           + 'onerror="this.outerHTML=\'<span style=&quot;color:#fff;font-family:Bungee,sans-serif;font-size:13px;&quot;>' + (tok.symbol||'?').slice(0,1) + '</span>\'">';
+    }
+    return '<span style="color:#fff;font-family:Bungee,sans-serif;font-size:13px;">' + (tok.symbol||'?').slice(0,1) + '</span>';
+  }
+
+  function paintPickers(){
+    $('emojiIn').innerHTML  = tokenLogo(STATE.from);
+    $('tokenIn').textContent = STATE.from.symbol;
+    $('emojiOut').innerHTML = tokenLogo(STATE.to);
+    $('tokenOut').textContent = STATE.to.symbol;
+  }
+
+  async function refreshBalances(){
+    if (!STATE.account){
+      $('balIn').textContent  = 'balance: —';
+      $('balOut').textContent = 'balance: —';
+      return;
+    }
+    try{
+      const [bIn, bOut] = await Promise.all([
+        STATE.from.address === NATIVE
+          ? T.nativeBalance(STATE.account)
+          : T.tokenBalance(STATE.from.address, STATE.account),
+        STATE.to.address === NATIVE
+          ? T.nativeBalance(STATE.account)
+          : T.tokenBalance(STATE.to.address, STATE.account),
+      ]);
+      const dIn  = STATE.from.decimals || 18;
+      const dOut = STATE.to.decimals   || 18;
+      $('balIn').textContent  = 'balance: ' + fmt(Number(ethers.formatUnits(bIn, dIn)))  + ' ' + STATE.from.symbol;
+      $('balOut').textContent = 'balance: ' + fmt(Number(ethers.formatUnits(bOut, dOut))) + ' ' + STATE.to.symbol;
+    }catch(e){
+      console.warn('balance fetch', e);
+    }
+  }
+
+  async function tryConnect(){
+    // Guard against rapid re-taps so MetaMask doesn't throw
+    // 'wallet_requestPermissions already pending'.
+    if (STATE.connecting) return;
+    STATE.connecting = true;
+    try{
+      const acct = await T.connect();
+      STATE.account = acct;
+      $('connectPill').classList.remove('off');
+      $('connectPill').classList.add('on');
+      $('connectText').textContent = acct.slice(0,6) + '…' + acct.slice(-4);
+      $('actionBtn').disabled = false;
+      $('actionBtn').textContent = 'ENTER AMOUNT';
+      await refreshBalances();
+      requestQuote();
+    }catch(e){
+      const msg = String(e && e.message || e);
+      if (!/already pending/i.test(msg)){
+        setStatus('error', e.message || 'Wallet connect failed');
+      }
+    }finally{
+      STATE.connecting = false;
+    }
+  }
+
+  let quoteTimer = null;
+  function requestQuote(){
+    clearTimeout(quoteTimer);
+    quoteTimer = setTimeout(doQuote, 400);
+  }
+  async function doQuote(){
+    const amtStr = $('amountIn').value.trim();
+    const amt = parseFloat(amtStr);
+    $('detailsBox').style.display = 'none';
+    $('impactWarn').style.display = 'none';
+    if (!amt || amt <= 0){
+      $('amountOut').value = '';
+      $('actionBtn').textContent = STATE.account ? 'ENTER AMOUNT' : 'CONNECT WALLET';
+      $('actionBtn').disabled = !STATE.account;
+      return;
+    }
+    if (STATE.from.address.toLowerCase() === STATE.to.address.toLowerCase()){
+      setStatus('error', 'From and To are the same token. Pick a different one.');
+      return;
+    }
+    setStatus('info', 'Routing best path across Monad DEXs…');
+    const seq = ++STATE.quoteSeq;
+    try{
+      const q = await T.quoteRoute({
+        from: STATE.from.address,
+        to:   STATE.to.address,
+        amount: amtStr,
+        sender: STATE.account || '0x000000000000000000000000000000000000dEaD',
+        slippageBps: STATE.slipBps,
+      });
+      if (seq !== STATE.quoteSeq) return;
+      STATE.quote = q;
+      $('amountOut').value = q.output_formatted || '';
+      $('detailsBox').style.display = '';
+      const proto = (q.routes && q.routes[0] && q.routes[0][0] && q.routes[0][0].splits && q.routes[0][0].splits[0] && q.routes[0][0].splits[0].protocol) || q._source || '?';
+      $('dRoute').textContent = STATE.from.symbol + ' → ' + STATE.to.symbol + ' via ' + proto;
+      $('dMin').textContent = (q.min_output_formatted || '—') + ' ' + STATE.to.symbol;
+      const imp = parseFloat(q.compound_impact || (q.routes && q.routes[0] && q.routes[0][0] && q.routes[0][0].splits && q.routes[0][0].splits[0] && q.routes[0][0].splits[0].price_impact) || 0);
+      $('dImpact').textContent = imp ? imp.toFixed(2) + '%' : '—';
+      if (imp >= 5){
+        const w = $('impactWarn');
+        w.style.display = '';
+        w.style.background = 'rgba(255,77,109,.08)';
+        w.style.borderColor = 'rgba(255,77,109,.4)';
+        w.style.color = '#ffcad4';
+        w.textContent = '⚠ HIGH PRICE IMPACT (' + imp.toFixed(1) + '%). Try a smaller amount, or accept higher slippage.';
+      }
+      if (STATE.account){
+        $('actionBtn').disabled = false;
+        const fromNative = STATE.from.address === NATIVE;
+        const verb = fromNative ? 'SWAP' : 'APPROVE + SWAP';
+        $('actionBtn').textContent = '🔁 ' + verb + ' ' + STATE.from.symbol + ' → ' + STATE.to.symbol;
+      }
+      setStatus('', '');
+    }catch(e){
+      if (seq !== STATE.quoteSeq) return;
+      STATE.quote = null;
+      $('amountOut').value = '';
+      $('actionBtn').disabled = true;
+      $('actionBtn').textContent = 'NO ROUTE FOUND';
+      setStatus('error', T.explainRevert(e) || e.message);
+    }
+  }
+
+  async function doSwap(){
+    if (!STATE.account){ return tryConnect(); }
+    if (!STATE.quote){ return; }
+    const amtStr = $('amountIn').value.trim();
+    if (!amtStr || parseFloat(amtStr) <= 0){
+      setStatus('error', 'Enter an amount.');
+      return;
+    }
+    $('actionBtn').disabled = true;
+    try{
+      setStatus('info', 'Building transaction…');
+      const result = await T.executeSwap({
+        from: STATE.from.address,
+        to:   STATE.to.address,
+        amountHuman: amtStr,
+        slippageBps: STATE.slipBps,
+        account: STATE.account,
+        onApproveStarted: () => setStatus('info', 'Approving ' + STATE.from.symbol + '… sign in wallet.'),
+        onApproveConfirmed: () => setStatus('info', 'Approval confirmed. Sign the swap…'),
+      });
+      const url = T.EXPLORER + '/tx/' + result.txHash;
+      setStatus('success', '✅ Swap submitted. <a href="' + url + '" target="_blank" rel="noopener">View tx ↗</a>');
+      const rec = await T.waitReceipt(result.txHash, 90000);
+      if (rec){
+        const got = result.quote.output_formatted;
+        setStatus('success', '🔥 Swap confirmed. Received ~' + got + ' ' + STATE.to.symbol + '. <a href="' + url + '" target="_blank" rel="noopener">View tx ↗</a>');
+      }
+      $('amountIn').value = '';
+      $('amountOut').value = '';
+      $('detailsBox').style.display = 'none';
+      await refreshBalances();
+    }catch(e){
+      setStatus('error', T.explainRevert(e) || e.message);
+    }finally{
+      $('actionBtn').disabled = false;
+      $('actionBtn').textContent = STATE.account ? '🔁 SWAP ' + STATE.from.symbol + ' → ' + STATE.to.symbol : 'CONNECT WALLET';
+    }
+  }
+
+  function setStatus(kind, msg){
+    const el = $('status');
+    if (!msg){ el.classList.remove('show'); el.innerHTML = ''; return; }
+    el.classList.remove('info','success','error');
+    el.classList.add('show');
+    if (kind) el.classList.add(kind);
+    el.innerHTML = msg;
+  }
+
+  function openPicker(which){
+    STATE.pickingFor = which;
+    $('modalTitle').textContent = which === 'in' ? 'SWAP FROM' : 'SWAP TO';
+    $('searchInput').value = '';
+    renderShortcuts();
+    renderTokenList(KNOWN, 'ECOSYSTEM');
+    $('modalOverlay').classList.add('show');
+    setTimeout(() => $('searchInput').focus(), 50);
+  }
+  function closePicker(){ $('modalOverlay').classList.remove('show'); }
+  function pickToken(tok){
+    if (STATE.pickingFor === 'in'){
+      if (tok.address.toLowerCase() === STATE.to.address.toLowerCase()){
+        STATE.to = STATE.from;
+      }
+      STATE.from = tok;
+    } else {
+      if (tok.address.toLowerCase() === STATE.from.address.toLowerCase()){
+        STATE.from = STATE.to;
+      }
+      STATE.to = tok;
+    }
+    paintPickers();
+    closePicker();
+    requestQuote();
+    refreshBalances();
+  }
+  function renderShortcuts(){
+    const root = $('shortcuts');
+    root.innerHTML = '';
+    for (const sym of SHORTCUT_SYMBOLS){
+      const tok = KNOWN.find(k => k.symbol === sym);
+      if (!tok) continue;
+      const el = document.createElement('button');
+      el.className = 'shortcut';
+      el.innerHTML = '<span class="ic">' + tokenLogo(tok) + '</span><span>' + tok.symbol + '</span>';
+      el.onclick = () => pickToken(tok);
+      root.appendChild(el);
+    }
+  }
+  function renderTokenList(list, label){
+    if (label) $('resultsLabel').textContent = label;
+    const root = $('tokenList');
+    root.innerHTML = '';
+    if (!list.length){
+      root.innerHTML = '<div class="token-empty">No tokens match. Try pasting a contract address.</div>';
+      return;
+    }
+    for (const tok of list){
+      const el = document.createElement('div');
+      el.className = 'token-row';
+      el.innerHTML =
+        '<span class="ic">' + tokenLogo(tok) + '</span>' +
+        '<div class="meta">' +
+          '<div class="sym">' + (tok.symbol||'?') + '</div>' +
+          '<div class="name">' + (tok.name||'') + '</div>' +
+          (tok.address && tok.address !== NATIVE ? '<div class="addr">' + shortAddr(tok.address) + '</div>' : '') +
+        '</div>';
+      el.onclick = () => pickToken(tok);
+      root.appendChild(el);
+    }
+  }
+
+  let searchTimer = null;
+  async function onSearch(q){
+    clearTimeout(searchTimer);
+    if (!q){
+      renderTokenList(KNOWN, 'ECOSYSTEM');
+      return;
+    }
+    if (/^0x[a-f0-9]{40}$/i.test(q.trim())){
+      const addr = q.trim().toLowerCase();
+      const known = KNOWN.find(k => k.address.toLowerCase() === addr);
+      if (known) return renderTokenList([known], 'MATCH');
+      $('resultsLabel').textContent = 'RESOLVING…';
+      try{
+        // Pull on-chain info AND Monorail metadata in parallel — Monorail
+        // returns an image_uri for most tokens (inherits from nad.fun).
+        const [info, monorailJson] = await Promise.all([
+          T.tokenInfo(addr),
+          fetch('https://api.monorail.xyz/v2/token/' + addr).then(r => r.ok ? r.json() : null).catch(() => null),
+        ]);
+        const tok = {
+          address: addr,
+          symbol: info.symbol,
+          name: info.name,
+          decimals: info.decimals,
+          logo: (monorailJson && monorailJson.image_uri) || null,
+        };
+        renderTokenList([tok], 'RESOLVED FROM CHAIN');
+      }catch(e){
+        renderTokenList([], 'NOT FOUND');
+      }
+      return;
+    }
+    searchTimer = setTimeout(async () => {
+      $('resultsLabel').textContent = 'SEARCHING…';
+      try{
+        const results = await T.searchTokens(q);
+        const normalized = (results || []).slice(0, 30).map(t => ({
+          address: (t.address || '').toLowerCase(),
+          symbol: t.symbol || '?',
+          name: t.name || '',
+          decimals: t.decimals || 18,
+          logo: t.image_uri || null,
+        })).filter(t => /^0x[a-f0-9]{40}$/i.test(t.address));
+        renderTokenList(normalized, normalized.length ? 'MONORAIL RESULTS' : 'NO MATCHES');
+
+        // Backfill missing image_uris from /v2/token/{addr} in parallel — the
+        // search endpoint sometimes returns null/missing logos even when the
+        // token has one. Re-renders after enrichment so letter chips upgrade
+        // to real PFPs progressively.
+        const needLogo = normalized.filter(t => !t.logo);
+        if (needLogo.length){
+          await Promise.allSettled(needLogo.map(async (t) => {
+            try{
+              const r = await fetch('https://api.monorail.xyz/v2/token/' + t.address);
+              if (!r.ok) return;
+              const j = await r.json();
+              if (j && j.image_uri) t.logo = j.image_uri;
+            }catch(e){}
+          }));
+          renderTokenList(normalized, 'MONORAIL RESULTS');
+        }
+      }catch(e){
+        renderTokenList([], 'SEARCH FAILED');
+      }
+    }, 250);
+  }
+
+  function flip(){
+    const tmp = STATE.from; STATE.from = STATE.to; STATE.to = tmp;
+    paintPickers();
+    $('amountIn').value = '';
+    $('amountOut').value = '';
+    $('detailsBox').style.display = 'none';
+    refreshBalances();
+  }
+
+  async function loadEngineStats(){ /* MOJAK: no flywheel yet — Monorail label is static */ }
+
+  function init(){
+    paintPickers();
+    $('amountIn').addEventListener('input', requestQuote);
+    $('pickIn').addEventListener('click', () => openPicker('in'));
+    $('pickOut').addEventListener('click', () => openPicker('out'));
+    $('modalClose').addEventListener('click', closePicker);
+    $('modalOverlay').addEventListener('click', (e) => { if (e.target.id === 'modalOverlay') closePicker(); });
+    $('searchInput').addEventListener('input', e => onSearch(e.target.value));
+    $('flipBtn').addEventListener('click', flip);
+    document.querySelectorAll('.pill').forEach(p => {
+      p.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+        p.classList.add('active');
+        STATE.slipBps = parseInt(p.dataset.slip);
+        if ($('amountIn').value) requestQuote();
+      });
+    });
+    $('balIn').addEventListener('click', async () => {
+      if (!STATE.account) return;
+      try{
+        const bal = STATE.from.address === NATIVE
+          ? await T.nativeBalance(STATE.account)
+          : await T.tokenBalance(STATE.from.address, STATE.account);
+        let raw = Number(ethers.formatUnits(bal, STATE.from.decimals || 18));
+        if (STATE.from.address === NATIVE) raw = Math.max(0, raw - 0.02);
+        $('amountIn').value = raw > 0 ? raw.toString() : '';
+        requestQuote();
+      }catch(e){}
+    });
+    $('connectPill').addEventListener('click', tryConnect);
+    $('actionBtn').addEventListener('click', doSwap);
+    if (window.ethereum && window.ethereum.selectedAddress){
+      tryConnect();
+    }
+    loadEngineStats();
+    setInterval(loadEngineStats, 30000);
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
