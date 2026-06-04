@@ -164,6 +164,12 @@ footer a:hover{color:var(--pink);}
 .token-row .name{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .token-row .addr{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(157,77,255,.6);margin-top:1px;}
 .token-empty{padding:20px;text-align:center;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;}
+
+.partner{display:flex;flex-direction:column;align-items:center;gap:8px;margin:18px auto 4px;opacity:.85}
+.partner .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase}
+.partner a{display:inline-flex;align-items:center;transition:.15s}
+.partner a:hover{opacity:1;transform:translateY(-1px)}
+.partner img{height:26px;width:auto;filter:drop-shadow(0 0 10px rgba(157,77,255,.25))}
 </style>
 </head>
 <body>
@@ -256,6 +262,10 @@ footer a:hover{color:var(--pink);}
   <div class="status" id="status"></div>
 
   <p class="note">Powered by <span class="warn">Monorail</span> aggregator — routes every trade across Monad DEXes for the best price. Any token ↔ any token. <span class="warn">1% fee</span> via Monorail.</p>
+  <div class="partner">
+    <div class="lbl">Powered by our tech partner</div>
+    <a href="https://monorail.xyz" target="_blank" rel="noopener"><img src="/assets/partners/monorail.png" alt="Monorail" /></a>
+  </div>
 </div>
 
 <footer>
