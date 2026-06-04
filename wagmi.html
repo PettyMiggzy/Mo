@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AM I GONNA MAKE IT? · Monad holder dashboard</title>
+<meta name="description" content="Paste or connect a wallet, pick a token, and see your bag, your staking position, and whether you're gonna make it. Live on Monad." />
+<link rel="icon" type="image/png" href="/assets/logo.png" />
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+<style>
+:root{--bg:#0b0614;--bg2:#120a22;--panel:#160c28;--panel2:#1b0f2a;--mojak:#9d4dff;--mojak2:#7b2dff;--violet:#b985ff;
+--hot:#ff48c4;--acid:#c6ff4d;--dim:#9b86c9;--ink:#f3ecff;--line:rgba(157,77,255,.18);--ok:#4ade80;--bad:#ff5d73;
+--fd:'Boogaloo',cursive;--fm:'Outfit',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:var(--fm);min-height:100vh;overflow-x:hidden;
+background-image:radial-gradient(120% 55% at 50% -10%,rgba(157,77,255,.22),transparent 60%),radial-gradient(80% 50% at 100% 12%,rgba(255,72,196,.1),transparent 55%);background-attachment:fixed}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px 80px}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px;backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(11,6,20,.92),rgba(11,6,20,.35));border-bottom:1px solid var(--line)}
+.bar a{color:var(--mojak);text-decoration:none;font-family:var(--fd);font-size:16px;letter-spacing:.5px}
+.bar .links{display:flex;gap:14px;align-items:center}
+.bar .links a{color:var(--dim);font-size:13px;font-family:var(--fm)}
+#connectBtn{font-family:var(--fd);font-size:13px;border:0;border-radius:30px;padding:9px 16px;cursor:pointer;background:linear-gradient(90deg,var(--mojak2),var(--mojak),var(--hot));color:#120016}
+#connectBtn.on{background:transparent;border:1px solid var(--mojak);color:var(--mojak)}
+.hero{text-align:center;padding:26px 0 8px}
+.hero h1{font-family:var(--fd);font-size:clamp(34px,9vw,60px);line-height:.92;background:linear-gradient(135deg,var(--mojak),var(--violet),var(--acid));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 22px rgba(157,77,255,.45))}
+.hero p{color:var(--dim);font-size:14px;margin-top:8px}
+.ctrl{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:18px 0}
+label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:block;margin:0 0 7px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:0}
+select,input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-family:var(--fm);padding:13px 14px;font-size:15px}
+select{cursor:pointer;font-family:var(--fd);letter-spacing:.5px;color:var(--mojak)}
+input[type=text]{font-family:var(--fm);color:var(--violet)}
+.go{margin-top:14px;width:100%;font-family:var(--fd);font-size:18px;letter-spacing:1px;border:0;border-radius:14px;padding:15px;cursor:pointer;background:linear-gradient(90deg,var(--mojak2),var(--mojak),var(--hot));color:#120016}
+.go:disabled{opacity:.5;cursor:not-allowed}
+.tiny{font-size:12px;color:var(--dim);margin-top:9px;text-align:center}
+.verdict{text-align:center;border-radius:20px;padding:24px 18px;margin:18px 0;border:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),rgba(11,6,20,.85))}
+.verdict .big{font-family:var(--fd);font-size:clamp(30px,8vw,52px);line-height:1}
+.verdict .sub{color:var(--dim);font-size:14px;margin-top:10px;max-width:520px;margin-inline:auto}
+.v-wagmi .big{color:var(--acid);text-shadow:0 0 26px rgba(198,255,77,.4)}
+.v-mid .big{color:var(--violet);text-shadow:0 0 26px rgba(185,133,255,.4)}
+.v-ngmi .big{color:var(--hot);text-shadow:0 0 26px rgba(255,72,196,.4)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}
+@media(min-width:620px){.grid{grid-template-columns:repeat(4,1fr)}}
+.stat{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.85));border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+.stat .n{font-family:var(--fd);font-size:24px;color:var(--mojak)}
+.stat .n.a{color:var(--acid)}.stat .n.h{color:var(--hot)}.stat .n.v{color:var(--violet)}
+.stat .k{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+.card{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:20px;margin:14px 0}
+.card h2{font-family:var(--fd);font-size:17px;color:var(--mojak);margin-bottom:4px;letter-spacing:.5px}
+.card .sub{color:var(--dim);font-size:12px;margin-bottom:14px}
+.pos{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;background:var(--bg)}
+.pos .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pos .amt{font-family:var(--fd);font-size:17px;color:var(--ink)}
+.pos .st{font-size:12px;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.pos .st.locked{color:var(--hot);border:1px solid rgba(255,72,196,.4)}
+.pos .st.free{color:var(--acid);border:1px solid rgba(198,255,77,.4)}
+.pos .line{font-size:13px;color:var(--dim);margin-top:8px}
+.pos .warn{font-size:13px;color:var(--hot);margin-top:8px;font-weight:600}
+.pos .rw{font-size:13px;color:var(--acid);margin-top:6px}
+.msg{text-align:center;color:var(--dim);font-size:14px;padding:18px}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--mojak);border-radius:50%;animation:s .7s linear infinite;vertical-align:middle}
+@keyframes s{to{transform:rotate(360deg)}}
+.foot{text-align:center;color:var(--dim);font-size:11px;margin-top:26px;line-height:1.7}
+.foot a{color:var(--mojak);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="bar">
+  <a href="/">‹ $MOJAK</a>
+  <div class="links">
+    <a href="/swap">Swap</a><a href="/stake">Stake</a>
+    <button id="connectBtn">CONNECT</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>AM I GONNA<br>MAKE IT?</h1>
+    <p>Paste a wallet (or connect), pick a token, find out. No cope, just chain data.</p>
+  </div>
+
+  <div class="ctrl">
+    <div class="row">
+      <div>
+        <label>Token</label>
+        <select id="tokenSel"></select>
+      </div>
+      <div style="flex:2">
+        <label>Wallet address</label>
+        <input id="addrIn" type="text" placeholder="0x… (paste any wallet, or hit CONNECT above)" spellcheck="false" />
+      </div>
+    </div>
+    <button class="go" id="goBtn">AM I GONNA MAKE IT?</button>
+    <div class="tiny" id="ctrlMsg">reads live from Monad — nothing leaves your browser, no wallet approval needed to check.</div>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="foot">
+    Live on Monad (chain 143) · data straight from the chain, verdicts are vibes.<br>
+    <a href="/stake">stake</a> · <a href="/swap">swap</a> · <a href="/">home</a>
+  </div>
+</div>
+
+<script>
+// ============ CONFIG — drop a new entry to add a token to ANY project ============
+var RPC = "https://rpc.monad.xyz";
+var TOKENS = [
+  { sym:"MOJAK",  name:"MOJAK · Stake That Mojak", token:"0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777", staking:"0x729B630C7D72DA15C982897234eF096bf6e9E030", dec:18 },
+  { sym:"CHRONIC",name:"Chronic",                  token:"0x52641feEdCE831247514bf7C2378513741077777", staking:"0x2429D01A12f35e53e82E2AD46FbA71F5CFD3F1D3", dec:18 },
+  { sym:"MONSHI", name:"Monshi",                   token:"0xB744F5CDb792d8187640214C4A1c9aCE29af7777", staking:"", dec:18 },
+  { sym:"CHOG",   name:"Chog",                     token:"0x5e1b1a14c8758104b8560514e94ab8320e587777", staking:"", dec:18 },
+  { sym:"RENE",   name:"Rene",                     token:"0xaCA86430cCCEdbedB35910fC8A5AFEF07dA37777", staking:"", dec:18 },
+  { sym:"MOYAKI", name:"Moyaki",                   token:"0xDe22b2d5B92364fEc7065c638aD82509949f7777", staking:"", dec:18 }
+];
+var EARLY_PENALTY_BPS = 1500; // 15% — matches Mojak/Chronic staking
+
+var ERC20_ABI = ["function balanceOf(address) view returns (uint256)","function totalSupply() view returns (uint256)","function decimals() view returns (uint8)","function symbol() view returns (string)"];
+var STAKE_ABI = [
+  "function stakedOf(address) view returns (uint256)",
+  "function positionCount(address) view returns (uint256)",
+  "function positions(address,uint256) view returns (uint256 amount,uint256 weight,uint256 lockEnd,uint256 rewardDebt,bool active)",
+  "function pendingReward(address,uint256) view returns (uint256)"
+];
+
+var ro = new ethers.JsonRpcProvider(RPC);
+var account = null, signer = null;
+function $(id){ return document.getElementById(id); }
+function fmt(x){ var n=Number(x); if(!isFinite(n)) return "0"; if(n>=1e9) return (n/1e9).toFixed(2)+"B"; if(n>=1e6) return (n/1e6).toFixed(2)+"M"; if(n>=1e3) return (n/1e3).toFixed(2)+"K"; if(n>=1) return n.toFixed(2); return n.toPrecision(2); }
+function short(a){ return a.slice(0,6)+"…"+a.slice(-4); }
+
+// token dropdown
+TOKENS.forEach(function(t,i){ var o=document.createElement('option'); o.value=i; o.textContent=t.sym+" — "+t.name; $('tokenSel').appendChild(o); });
+
+// ── connect (explicit only, no auto-connect) ──
+$('connectBtn').addEventListener('click', async function(){
+  if(account){ // disconnect
+    try{ if(window.ethereum&&window.ethereum.request){ await window.ethereum.request({method:'wallet_revokePermissions',params:[{eth_accounts:{}}]}); }catch(e){} }
+    account=null; signer=null; $('connectBtn').textContent='CONNECT'; $('connectBtn').classList.remove('on'); return;
+  }
+  if(!window.ethereum){ alert('No wallet found — or just paste an address instead.'); return; }
+  try{
+    var bp=new ethers.BrowserProvider(window.ethereum);
+    await bp.send('eth_requestAccounts',[]);
+    signer=await bp.getSigner(); account=await signer.getAddress();
+    $('connectBtn').textContent=short(account)+' ✕'; $('connectBtn').classList.add('on');
+    $('addrIn').value=account;
+  }catch(e){}
+});
+
+$('goBtn').addEventListener('click', run);
+$('addrIn').addEventListener('keydown', function(e){ if(e.key==='Enter') run(); });
+
+async function run(){
+  var addr=($('addrIn').value||'').trim();
+  if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){ $('ctrlMsg').innerHTML='<span style="color:var(--hot)">that\u2019s not a valid 0x address</span>'; return; }
+  $('ctrlMsg').textContent='reads live from Monad — nothing leaves your browser.';
+  var t=TOKENS[$('tokenSel').value];
+  $('result').innerHTML='<div class="msg"><span class="spin"></span> reading the chain for '+short(addr)+'…</div>';
+  try{
+    var tok=new ethers.Contract(t.token,ERC20_ABI,ro);
+    var bal=await tok.balanceOf(addr);
+    var sup=await tok.totalSupply().catch(function(){return 0n;});
+    var dec=t.dec;
+    var balN=Number(ethers.formatUnits(bal,dec));
+    var supN=sup>0n?Number(ethers.formatUnits(sup,dec)):0;
+    var pctSupply=supN>0?(balN/supN*100):0;
+
+    // staking
+    var stakedN=0, positions=[], pendTotal=0, hasStaking=!!t.staking;
+    if(hasStaking){
+      var sc=new ethers.Contract(t.staking,STAKE_ABI,ro);
+      var staked=await sc.stakedOf(addr).catch(function(){return 0n;});
+      stakedN=Number(ethers.formatUnits(staked,dec));
+      var n=Number(await sc.positionCount(addr).catch(function(){return 0n;}));
+      for(var i=0;i<n;i++){
+        var p=await sc.positions(addr,i); if(!p[4]) continue;
+        var pend=await sc.pendingReward(addr,i).catch(function(){return 0n;});
+        var amt=Number(ethers.formatUnits(p[0],dec));
+        var pendN=Number(ethers.formatUnits(pend,dec));
+        pendTotal+=pendN;
+        var lockEnd=Number(p[2])*1000;
+        var early=Date.now()<lockEnd;
+        positions.push({amt:amt,lockEnd:lockEnd,early:early,pend:pendN});
+      }
+    }
+    render(t,addr,balN,pctSupply,stakedN,positions,pendTotal,hasStaking);
+  }catch(e){
+    $('result').innerHTML='<div class="msg" style="color:var(--hot)">chain read failed — try again. ('+((e&&e.message)||e).toString().slice(0,80)+')</div>';
+  }
+}
+
+function render(t,addr,balN,pctSupply,stakedN,positions,pendTotal,hasStaking){
+  var total=balN+stakedN;
+  var html='';
+
+  // ---- verdict (dumb-funny, data-driven) ----
+  var cls='v-mid', big='HMMMM', sub='';
+  var lockedLong = positions.some(function(p){ return p.early && (p.lockEnd-Date.now())>120*864e5; });
+  var anyEarly = positions.some(function(p){ return p.early; });
+  if(total<=0){
+    cls='v-ngmi'; big='NGMI 💀';
+    sub='You don\u2019t hold a single $'+t.sym+'. Can\u2019t make it on hopium alone, ser. '+
+        '<a href="/swap" style="color:var(--mojak)">go fix that</a>.';
+  } else if(hasStaking && stakedN<=0){
+    cls='v-mid'; big='SO CLOSE';
+    sub='You\u2019re holding '+fmt(balN)+' $'+t.sym+' but staking <b>zero</b>. That\u2019s cope left on the table \u2014 '+
+        '<a href="/stake" style="color:var(--mojak)">lock it</a> for up to 5\u00d7 the rewards. Diamond hands stake.';
+  } else if(lockedLong){
+    cls='v-wagmi'; big='WAGMI 💎';
+    sub='Long-locked and loaded. Certified diamond hands. The cope pool feeds you while paper hands cry. gm.';
+  } else if(stakedN>0){
+    cls='v-wagmi'; big='GONNA MAKE IT';
+    sub='Staked and earning. '+(anyEarly?'Just don\u2019t paper-hand early (see below).':'Locks are up \u2014 you can claim free anytime.');
+  } else {
+    cls='v-mid'; big='HOLDING THE LINE';
+    sub='You\u2019ve got a bag. '+(hasStaking?'Stake it to actually earn.':'No staking for this one yet \u2014 just HODL.');
+  }
+  html+='<div class="verdict '+cls+'"><div class="big">'+big+'</div><div class="sub">'+sub+'</div></div>';
+
+  // ---- stats ----
+  html+='<div class="grid">'+
+    '<div class="stat"><div class="n">'+fmt(balN)+'</div><div class="k">In Wallet</div></div>'+
+    '<div class="stat"><div class="n v">'+fmt(stakedN)+'</div><div class="k">Staked</div></div>'+
+    '<div class="stat"><div class="n a">'+pctSupply.toFixed(pctSupply<0.01?4:2)+'%</div><div class="k">Of Supply</div></div>'+
+    '<div class="stat"><div class="n h">'+fmt(pendTotal)+'</div><div class="k">Claimable</div></div>'+
+  '</div>';
+
+  // ---- positions / the helpful part ----
+  if(hasStaking){
+    if(positions.length){
+      html+='<div class="card"><h2>▸ Your staking positions</h2><div class="sub">The honest math on each lock — including what bailing early actually costs you.</div>';
+      positions.forEach(function(p){
+        var penalty=p.amt*EARLY_PENALTY_BPS/10000;
+        var days=Math.max(0,Math.ceil((p.lockEnd-Date.now())/864e5));
+        html+='<div class="pos"><div class="top">'+
+          '<div class="amt">'+fmt(p.amt)+' $'+t.sym+'</div>'+
+          '<div class="st '+(p.early?'locked':'free')+'">'+(p.early?'🔒 '+days+'d left':'✅ unlocked')+'</div></div>';
+        if(p.early){
+          html+='<div class="warn">⚠️ Unstake now = lose '+fmt(penalty)+' $'+t.sym+' (15% cope tax). Wait '+days+' day'+(days===1?'':'s')+' and it\u2019s FREE.</div>';
+        } else {
+          html+='<div class="line">No penalty — you can unstake free whenever. 🙌</div>';
+        }
+        if(p.pend>0) html+='<div class="rw">💰 '+fmt(p.pend)+' $'+t.sym+' rewards waiting — go claim.</div>';
+        html+='</div>';
+      });
+      html+='</div>';
+    } else if(stakedN<=0){
+      html+='<div class="card"><h2>▸ Staking</h2><div class="sub">Nothing locked. <a href="/stake" style="color:var(--mojak)">Stake $'+t.sym+'</a> to earn from the pool — longer lock = up to 5× weight.</div></div>';
+    }
+  }
+
+  $('result').innerHTML=html;
+}
+</script>
+</body>
+</html>
