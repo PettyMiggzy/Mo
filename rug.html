@@ -104,7 +104,7 @@ async function run(){
   var addr=($('tokenIn').value||'').trim();
   if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){ $('result').innerHTML='<div class="msg" style="color:var(--hot)">that\u2019s not a valid token address</div>'; return; }
   $('goBtn').disabled=true;
-  $('result').innerHTML='<div class="msg"><span class="spin"></span> pinging the radar — mapping who bought, who got free bags, who\u2019s connected…</div>';
+  $('result').innerHTML='<div class="msg">🛠️ Rug Radar is recalibrating — the buy/free detection was miscounting router-routed buys (could mislabel real buyers). Taken offline until it\u2019s bulletproof. Back soon.</div>'; return;
   try{
     var r=await fetch('/api/insiders?address='+addr,{cache:'no-store'});
     if(!r.ok){ var t=await r.text(); throw new Error('HTTP '+r.status+' '+t.slice(0,80)); }
