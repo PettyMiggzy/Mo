@@ -60,6 +60,7 @@ window.addEventListener('resize',resize); resize();
 
 // MOJAK head, circle-cropped (source is opaque 256x256)
 const head = new Image(); head.src='/assets/logo.png'; let headReady=false; head.onload=()=>headReady=true;
+const biker = new Image(); biker.src='/assets/drive/biker.png'; let bikerReady=false; biker.onload=()=>bikerReady=true;
 const FEELS = ['based','bloomer','comfy','cope','doomer','npc','og_brainlet','og_hipster','og_soy','rage','sending']
   .map(n=>{ const i=new Image(); i.src='/assets/feels/'+n+'.png'; return i; });
 function drawImgCircle(img,x,y,r){
@@ -205,15 +206,12 @@ function render(){
       ctx.strokeStyle='#ff3b5c'; ctx.lineWidth=Math.max(1,2*sc); ctx.beginPath(); ctx.moveTo(x,y-h-h*0.3); ctx.lineTo(x,y+h*0.15); ctx.stroke();
     }
   }
-  // player (car + MOJAK head driver)
-  const py=H*0.84, px=W/2 + playerX*(W*0.40);
-  ctx.save(); ctx.translate(px,py); ctx.rotate((targetX-playerX)*0.25);
-  // car body
-  ctx.fillStyle='#7b2dff'; roundRect(-34,-10,68,46,10); ctx.fill();
-  ctx.fillStyle='#5a1fc0'; roundRect(-30,18,60,16,6); ctx.fill();
-  ctx.fillStyle='#120016'; ctx.fillRect(-38,8,8,22); ctx.fillRect(30,8,8,22); // wheels
+  // player — MOJAK on his bike
+  const py=H*0.88, px=W/2 + playerX*(W*0.40);
+  ctx.save(); ctx.translate(px,py); ctx.rotate((targetX-playerX)*0.16);
+  if(bikerReady){ const pw=Math.min(210,W*0.40), ph=pw*biker.height/biker.width; ctx.drawImage(biker,-pw/2,-ph,pw,ph); }
+  else { ctx.fillStyle='#7b2dff'; roundRect(-30,-40,60,40,8); ctx.fill(); drawHead(0,-46,16,0); }
   ctx.restore();
-  drawHead(px, py-18, 18, 0); // driver head
   // pops
   ctx.textAlign='center'; ctx.font="700 22px Boogaloo, sans-serif";
   pops=pops.filter(p=>p.life>0);
