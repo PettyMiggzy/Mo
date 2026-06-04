@@ -71,7 +71,7 @@ function drawHead(x,y,r,spin){
 
 // ---- game state ----
 let state='start', score=0, bags=0, best=+(localStorage.getItem('mojakdrive_best')||0);
-let speed, baseSpeed, dist, playerX, targetX, items, spawnT, shake;
+let speed, baseSpeed, dist, playerX=0, targetX=0, items=[], spawnT=0, shake=0;
 const horizonY=()=>H*0.40;
 function roadHalf(y){ const t=(y-horizonY())/(H-horizonY()); return 30 + t*t*(W*0.46); } // perspective width
 function roadCenter(y){ return W/2; } // straight road (clean + readable)
@@ -207,7 +207,7 @@ function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w
 
 // ---- loop ----
 let last=performance.now();
-function loop(now){ const dt=Math.min(40,now-last); last=now; update(dt); render(); requestAnimationFrame(loop); }
+function loop(now){ const dt=Math.min(40,now-last); last=now; try{ update(dt); render(); }catch(e){ console.error('frame:',e.message); } requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
 
 // ---- screens ----
