@@ -108,7 +108,7 @@ async function buildInsiders(token) {
     if (free && !bought) cat = sold ? 'dumper' : (b > 0n ? 'loaded' : 'mover');
     else if (bought) { buyers++; cat = (b > 0n ? 'buyer' : 'exited'); }
     else continue;
-    rows.push({ address: w, cat, pct: pct(b), bal: b.toString(), boughtN: a.inPool, soldN: a.outPool, freeN: a.inFree, fromDeployer: a.firstFrom === deployer });
+    rows.push({ address: w, cat, pct: pct(b), bal: b.toString(), boughtN: a.inPool, soldN: a.outPool, freeN: a.inFree, fromDeployer: a.firstFrom === deployer, firstFrom: a.firstFrom });
   }
 
   const side = rows.filter((r) => r.cat === 'dumper' || r.cat === 'loaded' || r.cat === 'mover');
@@ -121,7 +121,7 @@ async function buildInsiders(token) {
   // current holders (bal>0) for the bubble map: bought (green) vs got-free insider (red)
   const holders = byPct(rows.filter((r) => { try { return BigInt(r.bal) > 0n; } catch (_) { return false; } }))
     .slice(0, 80)
-    .map((r) => ({ address: r.address, pct: r.pct, cat: r.cat, fromDeployer: r.fromDeployer }));
+    .map((r) => ({ address: r.address, pct: r.pct, cat: r.cat, fromDeployer: r.fromDeployer, firstFrom: r.firstFrom }));
 
   // risk driven by supply actually held by free-bag insiders (forward dump risk), not harmless historical movers
   let risk = 'low';

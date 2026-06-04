@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>RUG RADAR · check any Monad token before you ape</title>
-<meta name="description" content="Paste any Monad token. See who actually bought vs who got a free bag they never paid for — and whether you're about to get dumped on. Powered by MOJAK." />
+<title>RUG RADAR · scan any Monad token before you ape</title>
+<meta name="description" content="Paste any Monad token. See a live radar of the holders — who paid, who got a free bag, and which wallets are connected. Powered by MOJAK." />
 <link rel="icon" type="image/png" href="/assets/logo.png" />
 <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
 <style>
@@ -18,10 +18,10 @@ background-image:radial-gradient(120% 55% at 50% -10%,rgba(157,77,255,.22),trans
 .bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px;backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(11,6,20,.92),rgba(11,6,20,.35));border-bottom:1px solid var(--line)}
 .bar a{color:var(--mojak);text-decoration:none;font-family:var(--fd);font-size:16px}
 .bar .links{display:flex;gap:14px;align-items:center}.bar .links a{color:var(--dim);font-size:13px;font-family:var(--fm)}
-.hero{text-align:center;padding:26px 0 8px}
+.hero{text-align:center;padding:24px 0 6px}
 .hero h1{font-family:var(--fd);font-size:clamp(36px,10vw,64px);line-height:.92;background:linear-gradient(135deg,var(--mojak),var(--violet),var(--hot));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 22px rgba(157,77,255,.45))}
 .hero p{color:var(--dim);font-size:14px;margin-top:8px;max-width:520px;margin-inline:auto}
-.ctrl{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:18px 0}
+.ctrl{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:16px 0}
 label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:block;margin:0 0 7px}
 input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;color:var(--violet);font-family:var(--fm);padding:13px 14px;font-size:15px}
 .go{margin-top:12px;width:100%;font-family:var(--fd);font-size:18px;letter-spacing:1px;border:0;border-radius:14px;padding:15px;cursor:pointer;background:linear-gradient(90deg,var(--mojak2),var(--mojak),var(--hot));color:#120016}
@@ -29,33 +29,42 @@ input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius
 .quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .quick button{font-family:var(--fd);font-size:12px;letter-spacing:.5px;background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:20px;padding:7px 13px;cursor:pointer}
 .quick button:hover{border-color:var(--mojak);color:var(--mojak)}
-.verdict{text-align:center;border-radius:20px;padding:24px 18px;margin:18px 0;border:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),rgba(11,6,20,.85))}
-.verdict .big{font-family:var(--fd);font-size:clamp(30px,8vw,50px);line-height:1.02}
-.verdict .sub{color:var(--dim);font-size:14px;margin-top:10px;max-width:540px;margin-inline:auto;line-height:1.5}
+.verdict{text-align:center;border-radius:20px;padding:22px 18px;margin:16px 0;border:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),rgba(11,6,20,.85))}
+.verdict .big{font-family:var(--fd);font-size:clamp(28px,7.5vw,46px);line-height:1.04}
+.verdict .sub{color:var(--dim);font-size:14px;margin-top:9px;max-width:540px;margin-inline:auto;line-height:1.5}
 .v-clean .big{color:var(--acid)}.v-mid .big{color:var(--yellow)}.v-rug .big{color:var(--hot)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+.radarwrap{background:radial-gradient(circle at 50% 50%,rgba(157,77,255,.06),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:20px;padding:10px;margin:14px 0}
+.radarwrap svg{width:100%;height:auto;display:block}
+.ring{fill:none;stroke:rgba(157,77,255,.14)}
+.cross{stroke:rgba(157,77,255,.1)}
+.node{cursor:pointer}
+.node circle{transition:.15s}
+.node:hover circle{stroke:#fff;stroke-width:2}
+.blab{font-family:var(--fm);font-size:11px;fill:#fff;font-weight:700;pointer-events:none}
+.core{fill:url(#coreg);stroke:var(--mojak);stroke-width:2}
+.coretext{font-family:var(--fd);fill:var(--ink);font-size:15px;text-anchor:middle;pointer-events:none}
+.sweep{transform-origin:300px 300px;animation:sweep 4s linear infinite}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.legend{font-size:12px;color:var(--dim);text-align:center;margin-top:6px;line-height:1.8}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:12px 0}
 @media(min-width:620px){.grid{grid-template-columns:repeat(4,1fr)}}
-.stat{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.85));border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center}
-.stat .n{font-family:var(--fd);font-size:23px;color:var(--mojak)}.stat .n.g{color:var(--green)}.stat .n.y{color:var(--yellow)}.stat .n.r{color:var(--red)}
+.stat{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.85));border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.stat .n{font-family:var(--fd);font-size:22px;color:var(--mojak)}.stat .n.g{color:var(--green)}.stat .n.y{color:var(--yellow)}.stat .n.r{color:var(--red)}
 .stat .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:5px}
-.card{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}
-.card h2{font-family:var(--fd);font-size:17px;color:var(--mojak);margin-bottom:3px}
+.card{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0}
+.card h2{font-family:var(--fd);font-size:16px;color:var(--mojak);margin-bottom:3px}
 .card .sub{color:var(--dim);font-size:12px;margin-bottom:12px}
-.w{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--line);margin-bottom:8px;background:var(--bg)}
+.w{display:flex;align-items:center;gap:10px;padding:9px;border-radius:12px;border:1px solid var(--line);margin-bottom:7px;background:var(--bg)}
 .w .tag{font-size:11px;font-family:var(--fd);letter-spacing:.5px;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
-.tag.buyer{color:var(--green);border:1px solid rgba(74,222,128,.4)}
+.tag.buyer,.tag.exited{color:var(--green);border:1px solid rgba(74,222,128,.4)}
 .tag.loaded{color:var(--yellow);border:1px solid rgba(255,216,77,.4)}
-.tag.dumper{color:var(--red);border:1px solid rgba(255,93,115,.4)}
-.tag.mover{color:var(--red);border:1px solid rgba(255,93,115,.3)}
-.w a{flex:1;min-width:0;color:var(--ink);text-decoration:none;font-size:13px;font-family:var(--fm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.w a:hover{color:var(--mojak)}
-.w .pct{font-family:var(--fd);font-size:15px;color:var(--ink);flex-shrink:0}
-.note{font-size:12px;color:var(--dim);margin-top:6px}
+.tag.dumper,.tag.mover{color:var(--red);border:1px solid rgba(255,93,115,.4)}
+.w a{flex:1;min-width:0;color:var(--ink);text-decoration:none;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w a:hover{color:var(--mojak)}.w .pct{font-family:var(--fd);font-size:15px;flex-shrink:0}
 .warnbox{background:rgba(255,216,77,.08);border:1px solid rgba(255,216,77,.35);color:var(--yellow);border-radius:12px;padding:11px 14px;font-size:13px;margin:12px 0;text-align:center}
 .msg{text-align:center;color:var(--dim);font-size:14px;padding:20px}
 .spin{display:inline-block;width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--mojak);border-radius:50%;animation:s .7s linear infinite;vertical-align:middle}
 @keyframes s{to{transform:rotate(360deg)}}
-.legend{font-size:12px;color:var(--dim);text-align:center;margin-top:8px;line-height:1.8}
 .foot{text-align:center;color:var(--dim);font-size:11px;margin-top:24px;line-height:1.7}.foot a{color:var(--mojak);text-decoration:none}
 </style>
 </head>
@@ -64,40 +73,30 @@ input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius
   <a href="/">‹ $MOJAK</a>
   <div class="links"><a href="/wagmi">WAGMI?</a><a href="/swap">Swap</a><a href="/stake">Stake</a></div>
 </div>
-
 <div class="wrap">
   <div class="hero">
     <h1>RUG RADAR</h1>
-    <p>Paste any Monad token. See who actually <b style="color:var(--green)">paid</b> vs who's sitting on a <b style="color:var(--yellow)">free bag they never bought</b> — before you ape in.</p>
+    <p>Paste any Monad token. Watch the holders light up — who <b style="color:var(--green)">paid</b>, who's on a <b style="color:var(--yellow)">free bag</b>, and which wallets are <b style="color:var(--mojak)">connected</b>.</p>
   </div>
-
   <div class="ctrl">
     <label>Token contract address</label>
     <input id="tokenIn" type="text" placeholder="0x… any Monad token" spellcheck="false" />
-    <button class="go" id="goBtn">SCAN IT 🔎</button>
+    <button class="go" id="goBtn">PING THE RADAR 📡</button>
     <div class="quick" id="quick"></div>
   </div>
-
   <div id="result"></div>
-
   <div class="foot">
-    Reads on-chain transfer history — every flag links to the explorer so you can verify it yourself.<br>
-    Powered by <a href="/">$MOJAK</a> · vibes are jokes, the wallets are real.
+    Live on-chain. Bubbles are real wallets — tap any to verify on the explorer.<br>
+    Powered by <a href="/">$MOJAK</a> · the radar's real, the verdicts are vibes.
   </div>
 </div>
-
 <script>
 var EXPLORER="https://monadscan.com/address/";
-var QUICK=[
-  {sym:"MOJAK",a:"0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777"},
-  {sym:"CHOG",a:"0x5e1b1a14c8758104b8560514e94ab8320e587777"},
-  {sym:"MONSHI",a:"0xB744F5CDb792d8187640214C4A1c9aCE29af7777"},
-  {sym:"RENE",a:"0xaCA86430cCCEdbedB35910fC8A5AFEF07dA37777"}
-];
+var QUICK=[{sym:"MOJAK",a:"0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777"},{sym:"CHOG",a:"0x5e1b1a14c8758104b8560514e94ab8320e587777"},{sym:"MONSHI",a:"0xB744F5CDb792d8187640214C4A1c9aCE29af7777"},{sym:"RENE",a:"0xaCA86430cCCEdbedB35910fC8A5AFEF07dA37777"}];
 function $(i){return document.getElementById(i);}
 function short(a){return a.slice(0,6)+"…"+a.slice(-4);}
+function col(c){return (c==='buyer'||c==='exited')?'#4ade80':(c==='loaded'?'#ffd84d':'#ff5d73');}
 QUICK.forEach(function(q){var b=document.createElement('button');b.textContent=q.sym;b.onclick=function(){$('tokenIn').value=q.a;run();};$('quick').appendChild(b);});
-
 $('goBtn').addEventListener('click',run);
 $('tokenIn').addEventListener('keydown',function(e){if(e.key==='Enter')run();});
 
@@ -105,66 +104,90 @@ async function run(){
   var addr=($('tokenIn').value||'').trim();
   if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){ $('result').innerHTML='<div class="msg" style="color:var(--hot)">that\u2019s not a valid token address</div>'; return; }
   $('goBtn').disabled=true;
-  $('result').innerHTML='<div class="msg"><span class="spin"></span> walking the chain — who bought, who got free bags…</div>';
+  $('result').innerHTML='<div class="msg"><span class="spin"></span> pinging the radar — mapping who bought, who got free bags, who\u2019s connected…</div>';
   try{
     var r=await fetch('/api/insiders?address='+addr,{cache:'no-store'});
     if(!r.ok){ var t=await r.text(); throw new Error('HTTP '+r.status+' '+t.slice(0,80)); }
-    var d=await r.json();
-    render(addr,d);
-  }catch(e){
-    $('result').innerHTML='<div class="msg" style="color:var(--hot)">scan failed — '+((e&&e.message)||e).toString().slice(0,90)+'</div>';
-  } finally { $('goBtn').disabled=false; }
+    render(addr,await r.json());
+  }catch(e){ $('result').innerHTML='<div class="msg" style="color:var(--hot)">radar failed — '+((e&&e.message)||e).toString().slice(0,90)+'</div>'; }
+  finally{ $('goBtn').disabled=false; }
+}
+
+function buildRadar(d){
+  var nodes=(d.holders||[]).slice(0,45);
+  if(!nodes.length) return '<div class="msg">No holders bright enough to plot.</div>';
+  var cx=300,cy=300, maxPct=Math.max.apply(null,nodes.map(function(n){return n.pct;}))||1;
+  // cluster by funder
+  var groups={}; nodes.forEach(function(n){var f=(n.firstFrom||('solo'+Math.random())); (groups[f]=groups[f]||[]).push(n);});
+  var gk=Object.keys(groups), gi=0;
+  gk.forEach(function(k){
+    var m=groups[k], base=(gi/gk.length)*Math.PI*2;
+    m.forEach(function(n,mi){
+      var ang=base+(mi-(m.length-1)/2)*0.20;
+      var pn=Math.sqrt(n.pct/maxPct);
+      var rad=95+(1-pn)*165;
+      n._x=cx+Math.cos(ang)*rad; n._y=cy+Math.sin(ang)*rad;
+      n._r=Math.max(6,pn*34);
+    });
+    gi++;
+  });
+  var s='<svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">';
+  s+='<defs><radialGradient id="coreg"><stop offset="0%" stop-color="#b985ff"/><stop offset="100%" stop-color="#3a1a66"/></radialGradient>'+
+     '<linearGradient id="sweepg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(157,77,255,.35)"/><stop offset="100%" stop-color="rgba(157,77,255,0)"/></linearGradient></defs>';
+  [70,140,210,280].forEach(function(r){ s+='<circle class="ring" cx="300" cy="300" r="'+r+'"/>'; });
+  s+='<line class="cross" x1="20" y1="300" x2="580" y2="300"/><line class="cross" x1="300" y1="20" x2="300" y2="580"/>';
+  s+='<g class="sweep"><path d="M300 300 L300 20 A280 280 0 0 1 520 160 Z" fill="url(#sweepg)"/></g>';
+  // dev-funded -> center red lines
+  nodes.forEach(function(n){ if(n.fromDeployer) s+='<line x1="300" y1="300" x2="'+n._x.toFixed(1)+'" y2="'+n._y.toFixed(1)+'" stroke="rgba(255,93,115,.45)" stroke-width="1.2"/>'; });
+  // same-funder cluster lines (sybil signal)
+  gk.forEach(function(k){ var m=groups[k]; if(m.length<2||/^solo/.test(k)) return; for(var i=1;i<m.length;i++){ s+='<line x1="'+m[0]._x.toFixed(1)+'" y1="'+m[0]._y.toFixed(1)+'" x2="'+m[i]._x.toFixed(1)+'" y2="'+m[i]._y.toFixed(1)+'" stroke="rgba(157,77,255,.4)" stroke-width="1"/>'; } });
+  // core
+  s+='<circle class="core" cx="300" cy="300" r="26"/><text class="coretext" x="300" y="305">POOL</text>';
+  // bubbles
+  nodes.forEach(function(n){
+    s+='<g class="node" onclick="window.open(\''+EXPLORER+n.address+'\',\'_blank\')"><title>'+short(n.address)+' · '+n.pct.toFixed(2)+'% · '+n.cat+(n.fromDeployer?' · from dev':'')+'</title>'+
+       '<circle cx="'+n._x.toFixed(1)+'" cy="'+n._y.toFixed(1)+'" r="'+n._r.toFixed(1)+'" fill="'+col(n.cat)+'" fill-opacity="0.82" stroke="'+col(n.cat)+'" stroke-width="1"/>'+
+       (n.pct>=1.5?'<text class="blab" x="'+n._x.toFixed(1)+'" y="'+(n._y+4).toFixed(1)+'" text-anchor="middle">'+n.pct.toFixed(0)+'%</text>':'')+'</g>';
+  });
+  s+='</svg>';
+  return s;
 }
 
 function render(addr,d){
-  // 1%+ holders only — the wallets big enough to actually hurt you
+  if(d.error){ $('result').innerHTML='<div class="msg" style="color:var(--hot)">'+d.error+'</div>'; return; }
   var big=(d.holders||[]).filter(function(h){return h.pct>=1;});
   var bigFree=big.filter(function(h){return h.cat==='loaded'||h.cat==='dumper'||h.cat==='mover';});
   var bigFreePct=Math.round(bigFree.reduce(function(s,h){return s+h.pct;},0)*100)/100;
   var s=d.stats||{};
+  // connected clusters (≥2 wallets sharing a funder, among shown holders)
+  var fmap={}; (d.holders||[]).slice(0,45).forEach(function(h){ if(h.firstFrom){ (fmap[h.firstFrom]=fmap[h.firstFrom]||[]).push(h);} });
+  var clusters=Object.keys(fmap).filter(function(k){return fmap[k].length>=2;}).length;
 
-  // ---- dumb-funny verdict, driven by real risk ----
-  var cls='v-mid',big_t='HMMMM',sub='';
-  if(d.risk==='high'||bigFreePct>=8){
-    cls='v-rug'; big_t='🚩🚩 RUG VIBES';
-    sub=bigFree.length+' fat wallet'+(bigFree.length===1?'':'s')+' holding '+bigFreePct+'% of supply that <b>never paid a cent</b> for it. that\u2019s a loaded gun pointed at your bag. ape at your own funeral. 💀';
-  } else if(d.risk==='medium'||bigFree.length>0){
-    cls='v-mid'; big_t='🚩 KINDA SUS';
-    sub=bigFree.length+' whale'+(bigFree.length===1?'':'s')+' (≥1%) got '+bigFreePct+'% free and never bought. not an instant rug, but keep your finger near the sell. 👀';
-  } else if(big.length===0){
-    cls='v-clean'; big_t='✅ SPREAD OUT';
-    sub='No single wallet even holds 1%. Either super distributed or super dead — either way nobody\u2019s sitting on a supply bomb. based.';
-  } else {
-    cls='v-clean'; big_t='✅ LOOKS BASED';
-    sub='Every whale (≥1%) actually <b>bought in</b> — no fat free bags lurking. ape away, ser. (still not financial advice 🫡)';
-  }
-  var html='<div class="verdict '+cls+'"><div class="big">'+big_t+'</div><div class="sub">'+sub+'</div></div>';
+  var cls='v-mid',title='HMMMM',sub='';
+  if(d.risk==='high'||bigFreePct>=8){ cls='v-rug'; title='🚩🚩 RUG VIBES'; sub=bigFree.length+' fat wallet'+(bigFree.length===1?'':'s')+' holding '+bigFreePct+'% that <b>never paid a cent</b>. loaded gun pointed at your bag. ape at your own funeral. 💀'; }
+  else if(d.risk==='medium'||bigFree.length>0){ cls='v-mid'; title='🚩 KINDA SUS'; sub=bigFree.length+' whale'+(bigFree.length===1?'':'s')+' (≥1%) got '+bigFreePct+'% free & never bought. finger near the sell. 👀'; }
+  else if(big.length===0){ cls='v-clean'; title='✅ SPREAD OUT'; sub='No single wallet holds 1%+. Nobody\u2019s sitting on a supply bomb. based.'; }
+  else { cls='v-clean'; title='✅ LOOKS BASED'; sub='Every whale (≥1%) actually <b>bought in</b> — no fat free bags. ape away, ser. 🫡'; }
+  if(clusters>0) sub+=' <br><span style="color:var(--mojak)">'+clusters+' connected wallet cluster'+(clusters===1?'':'s')+' lit up on the radar.</span>';
 
-  // ---- stats ----
+  var html='<div class="verdict '+cls+'"><div class="big">'+title+'</div><div class="sub">'+sub+'</div></div>';
+  html+='<div class="radarwrap">'+buildRadar(d)+'<div class="legend">🟢 bought · 🟡 free bag (never paid) · 🔴 got free &amp; sold/moving · purple lines = same funder (connected) · red lines = funded by dev</div></div>';
   html+='<div class="grid">'+
     '<div class="stat"><div class="n">'+big.length+'</div><div class="k">Whales ≥1%</div></div>'+
-    '<div class="stat"><div class="n g">'+(s.buyers||0)+'</div><div class="k">Actually Bought</div></div>'+
+    '<div class="stat"><div class="n g">'+(s.buyers||0)+'</div><div class="k">Bought In</div></div>'+
     '<div class="stat"><div class="n y">'+bigFree.length+'</div><div class="k">Free Bags ≥1%</div></div>'+
-    '<div class="stat"><div class="n r">'+(s.dumped||0)+'</div><div class="k">Already Dumped</div></div>'+
+    '<div class="stat"><div class="n r">'+(s.dumped||0)+'</div><div class="k">Dumped</div></div>'+
   '</div>';
-
-  if(s.partial){ html+='<div class="warnbox">⚠️ Big token — scanned the most recent '+(s.transfers||0).toLocaleString()+' transfers, so older history may be missing. Treat as a snapshot, not the whole life story.</div>'; }
-
-  // ---- the ≥1% wallets, flagged ----
+  if(s.partial) html+='<div class="warnbox">⚠️ Big token — scanned ~'+(s.transfers||0).toLocaleString()+' transfers (launch + recent). Balances are exact (read live), but a quiet mid-life holder could be off radar.</div>';
   if(big.length){
-    html+='<div class="card"><h2>The wallets that matter (≥1%)</h2><div class="sub">Tap any to verify on the explorer. We show our work — no blind accusations.</div>';
+    html+='<div class="card"><h2>The wallets that matter (≥1%)</h2><div class="sub">Tap any bubble or row to verify on the explorer.</div>';
     big.slice(0,30).forEach(function(h){
-      var label = h.cat==='buyer'?'🟢 BOUGHT':(h.cat==='loaded'?'🟡 FREE BAG':(h.cat==='dumper'?'🔴 DUMPED':(h.cat==='mover'?'🔴 FREE/MOVED':'·'+h.cat)));
-      var dep = h.fromDeployer ? ' <span style="color:var(--red)">· from dev</span>' : '';
-      html+='<div class="w"><span class="tag '+h.cat+'">'+label+'</span>'+
-            '<a href="'+EXPLORER+h.address+'" target="_blank" rel="noopener">'+short(h.address)+dep+'</a>'+
-            '<span class="pct">'+h.pct.toFixed(2)+'%</span></div>';
+      var label=h.cat==='buyer'?'🟢 BOUGHT':(h.cat==='loaded'?'🟡 FREE BAG':(h.cat==='dumper'?'🔴 DUMPED':(h.cat==='mover'?'🔴 FREE/MOVED':'🟢 '+h.cat)));
+      var dep=h.fromDeployer?' <span style="color:var(--red)">· from dev</span>':'';
+      html+='<div class="w"><span class="tag '+h.cat+'">'+label+'</span><a href="'+EXPLORER+h.address+'" target="_blank" rel="noopener">'+short(h.address)+dep+'</a><span class="pct" style="color:'+col(h.cat)+'">'+h.pct.toFixed(2)+'%</span></div>';
     });
-    html+='<div class="legend">🟢 paid for it · 🟡 got it free & still holding (insider bag) · 🔴 got free & sold / moving it</div></div>';
-  } else {
-    html+='<div class="card"><div class="msg">No wallet holds ≥1% — distribution looks flat. Nothing big enough to dump-bomb you.</div></div>';
+    html+='</div>';
   }
-
   $('result').innerHTML=html;
 }
 </script>
