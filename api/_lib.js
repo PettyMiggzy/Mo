@@ -15,7 +15,7 @@
 
 const CHAIN_ID = 143; // Monad mainnet
 const ES_BASE = 'https://api.etherscan.io/v2/api';
-const RPC = process.env.MONAD_RPC || 'https://rpc.monad.xyz';
+const RPC = process.env.MONAD_RPC || 'https://monad-mainnet.g.alchemy.com/v2/_ZfKSl1YD2Yur6eajfKkN';
 const ES_KEY = process.env.ETHERSCAN_API_KEY || '';
 
 const NATIVE_DECIMALS = 18;

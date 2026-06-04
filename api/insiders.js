@@ -15,15 +15,21 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 
 function hexBig(h) { try { return (h && h !== '0x') ? BigInt(h) : 0n; } catch (_) { return 0n; } }
 
-async function rpcBatch(calls) {
+async function rpcBatch(calls, attempt) {
+  attempt = attempt || 0;
   try {
     const r = await fetch(L.RPC, {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify(calls),
     });
     const a = await r.json();
-    return Array.isArray(a) ? a : [];
-  } catch (_) { return []; }
+    if (Array.isArray(a)) return a;
+    if (a && a.result !== undefined) return [a];
+    throw new Error('bad batch shape');
+  } catch (e) {
+    if (attempt < 2) { await new Promise((s) => setTimeout(s, 250 * (attempt + 1))); return rpcBatch(calls, attempt + 1); }
+    return [];
+  }
 }
 
 async function buildInsiders(token) {
@@ -90,12 +96,30 @@ async function buildInsiders(token) {
   // 5) supply + current balances
   const supRes = await rpcBatch([{ jsonrpc: '2.0', id: 0, method: 'eth_call', params: [{ to: token, data: '0x18160ddd' }, 'latest'] }]);
   const supply = hexBig(supRes[0] && supRes[0].result);
+  // cap candidates by on-chain activity so a huge token can't time out the function
+  const act = (w) => { const a = agg[w]; return a.inPool + a.outPool + a.inFree + a.outFree; };
+  wallets.sort((x, y) => act(y) - act(x));
+  if (wallets.length > 300) wallets = wallets.slice(0, 300);
   const bal = {};
-  for (let i = 0; i < wallets.length; i += 100) {
-    const chunk = wallets.slice(i, i + 100);
-    const res = await rpcBatch(chunk.map((w, j) => ({ jsonrpc: '2.0', id: j, method: 'eth_call', params: [{ to: token, data: '0x70a08231' + '0'.repeat(24) + w.slice(2) }, 'latest'] })));
-    for (const c of res) bal[chunk[c.id]] = hexBig(c.result);
+  const CHUNK = 20;
+  // resolve EVERY wallet's balance — retry the ones that come back empty so results are
+  // complete & consistent run-to-run (public RPC drops calls under load).
+  let pending = wallets.slice();
+  let balPartial = false;
+  for (let round = 0; round < 4 && pending.length; round++) {
+    const missing = [];
+    for (let i = 0; i < pending.length; i += CHUNK) {
+      const chunk = pending.slice(i, i + CHUNK);
+      const res = await rpcBatch(chunk.map((w, j) => ({ jsonrpc: '2.0', id: j, method: 'eth_call', params: [{ to: token, data: '0x70a08231' + '0'.repeat(24) + w.slice(2) }, 'latest'] })));
+      const byId = {};
+      for (const c of res) { if (c && c.id != null && c.result) byId[c.id] = c.result; }
+      chunk.forEach((w, j) => { if (byId[j] !== undefined) bal[w] = hexBig(byId[j]); else missing.push(w); });
+      if (i + CHUNK < pending.length) await new Promise((s) => setTimeout(s, 35));
+    }
+    pending = missing;
+    if (pending.length && round < 3) await new Promise((s) => setTimeout(s, 200));
   }
+  if (pending.length) balPartial = true; // couldn't resolve some balances even after retries
 
   // 6) classify
   const pct = (b) => (supply > 0n ? Number(b * 1000000n / supply) / 10000 : 0);
@@ -110,6 +134,15 @@ async function buildInsiders(token) {
     else continue;
     rows.push({ address: w, cat, pct: pct(b), bal: b.toString(), boughtN: a.inPool, soldN: a.outPool, freeN: a.inFree, fromDeployer: a.firstFrom === deployer, firstFrom: a.firstFrom });
   }
+
+  // flag contract holders (staking / LP / treasury / vesting) so they aren't smeared as insider bags
+  try {
+    const topRows = rows.slice().sort((x, y) => y.pct - x.pct).slice(0, 45);
+    const codeRes = await rpcBatch(topRows.map((r, j) => ({ jsonrpc: '2.0', id: j, method: 'eth_getCode', params: [r.address, 'latest'] })));
+    const cById = {};
+    for (const c of codeRes) { if (c && c.id != null) cById[c.id] = c.result; }
+    topRows.forEach((r, j) => { const cd = cById[j]; if (cd && cd !== '0x' && cd.length > 4) r.cat = 'contract'; });
+  } catch (_) { /* best effort */ }
 
   const side = rows.filter((r) => r.cat === 'dumper' || r.cat === 'loaded' || r.cat === 'mover');
   const loaded = side.filter((r) => r.cat === 'loaded');
@@ -137,7 +170,7 @@ async function buildInsiders(token) {
       side: side.length, sidePct: Math.round(sidePct * 100) / 100,
       loaded: loaded.length, loadedPct: Math.round(loadedPct * 100) / 100,
       dumped: dumpers.length,
-      transfers: xfers.length, partial,
+      transfers: xfers.length, partial: partial || balPartial,
     },
     loaded: byPct(loaded).slice(0, 60),
     dumpers: byPct(dumpers).slice(0, 60),
