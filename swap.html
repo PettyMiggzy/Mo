@@ -170,9 +170,27 @@ footer a:hover{color:var(--pink);}
 .partner a{display:inline-flex;align-items:center;transition:.15s}
 .partner a:hover{opacity:1;transform:translateY(-1px)}
 .partner img{height:26px;width:auto;filter:drop-shadow(0 0 10px rgba(157,77,255,.25))}
+
+.hero-row{display:flex;align-items:center;justify-content:center;gap:14px}
+.hero-row h1{margin-bottom:0!important}
+.spin-logo{width:60px;height:60px;border-radius:50%;box-shadow:0 0 24px rgba(157,77,255,.55);animation:spin360 5.5s linear infinite;flex-shrink:0}
+@keyframes spin360{to{transform:rotate(360deg)}}
+/* MOJAK head cursor on the swap page */
+html,body,a,button,input,.tk-btn,.action,.swap-toggle,.slip-btn,.token-row{cursor:url(/assets/stake/cursor-mojak.png) 20 20,auto!important}
+/* dumb-funny side decorations (desktop gutters only) */
+.sidefx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;display:none}
+@media(min-width:1180px){.sidefx{display:block}}
+.fx{position:absolute;font-family:'Boogaloo',cursive;font-weight:700;opacity:.55;user-select:none}
+.fx.emoji{font-size:42px;opacity:.8;filter:drop-shadow(0 0 10px rgba(157,77,255,.4))}
+.fx.tag{font-size:21px;color:var(--green);text-shadow:0 0 12px rgba(157,77,255,.5)}
+.fx.tag.p{color:var(--purple)} .fx.tag.g{color:var(--gold)} .fx.tag.h{color:var(--pink)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-20px) rotate(var(--r,0deg))}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fx.spin{animation:spin 8s linear infinite}
 </style>
 </head>
 <body>
+<div class="sidefx" aria-hidden="true"><span class="fx emoji" style="left:3vw;top:14%;--r:-8deg;animation:bob 4s ease-in-out infinite">🔁</span><span class="fx tag g" style="left:6vw;top:25%;--r:-12deg;animation:bob 5s ease-in-out .3s infinite">WAGMI</span><span class="fx emoji spin" style="left:2vw;top:39%;">🪙</span><span class="fx tag p" style="left:5vw;top:51%;--r:8deg;animation:bob 4.5s ease-in-out .6s infinite">APE IT</span><span class="fx emoji" style="left:7vw;top:64%;--r:14deg;animation:bob 5.5s ease-in-out infinite">💱</span><span class="fx tag h" style="left:2vw;top:77%;--r:-6deg;animation:bob 4s ease-in-out .2s infinite">no rugs</span><span class="fx emoji" style="left:6vw;top:89%;animation:bob 6s ease-in-out infinite">🥩</span><span class="fx tag" style="right:5vw;top:13%;--r:10deg;animation:bob 4.8s ease-in-out .4s infinite">SEND IT</span><span class="fx emoji spin" style="right:3vw;top:23%;">🪙</span><span class="fx tag p" style="right:5vw;top:35%;--r:-10deg;animation:bob 5s ease-in-out infinite">best price</span><span class="fx emoji" style="right:2vw;top:47%;--r:6deg;animation:bob 4.2s ease-in-out .5s infinite">🚀</span><span class="fx tag g" style="right:7vw;top:59%;--r:-14deg;animation:bob 5.4s ease-in-out infinite">1 click</span><span class="fx emoji" style="right:3vw;top:71%;--r:18deg;animation:bob 4s ease-in-out .3s infinite">💎</span><span class="fx tag" style="right:5vw;top:83%;--r:8deg;animation:bob 5s ease-in-out infinite">degen</span><span class="fx emoji" style="right:8vw;top:93%;animation:bob 6s ease-in-out infinite">🔁</span></div>
 
 <div class="wrap">
 
@@ -185,7 +203,7 @@ footer a:hover{color:var(--pink);}
 </div>
 
 <section class="hero">
-  <h1>🔁 SWAP</h1>
+  <div class="hero-row"><img src="/assets/logo.png" alt="MOJAK" class="spin-logo"><h1>SWAP</h1></div>
   <p>ANY MONAD TOKEN ↔ ANY MONAD TOKEN · BEST PRICE VIA MONORAIL</p>
 </section>
 
@@ -758,6 +776,21 @@ footer a:hover{color:var(--pink);}
   } else {
     init();
   }
+})();
+</script>
+
+<script>
+/* coin trail behind cursor (swap vibe) */
+(function(){
+ var last=0, coins=['🪙','💱','🔁'];
+ document.addEventListener('mousemove',function(e){
+   var now=Date.now(); if(now-last<55) return; last=now;
+   var s=document.createElement('div'); s.textContent=coins[(Math.random()*coins.length)|0];
+   s.style.cssText='position:fixed;left:'+(e.clientX-9)+'px;top:'+(e.clientY-9)+'px;font-size:19px;pointer-events:none;z-index:99999;transition:transform .8s ease-out,opacity .8s ease-out;will-change:transform,opacity';
+   document.body.appendChild(s);
+   requestAnimationFrame(function(){ s.style.transform='translateY(26px) rotate('+(Math.random()*60-30)+'deg) scale(.55)'; s.style.opacity='0'; });
+   setTimeout(function(){ s.remove(); },820);
+ },{passive:true});
 })();
 </script>
 </body>
