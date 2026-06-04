@@ -765,9 +765,7 @@ html,body,a,button,input,.tk-btn,.action,.swap-toggle,.slip-btn,.token-row{curso
     });
     $('connectPill').addEventListener('click', tryConnect);
     $('actionBtn').addEventListener('click', doSwap);
-    if (window.ethereum && window.ethereum.selectedAddress){
-      tryConnect();
-    }
+    // no auto-connect on load — user taps the pill to connect
     loadEngineStats();
     setInterval(loadEngineStats, 30000);
   }
