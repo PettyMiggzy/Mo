@@ -137,7 +137,7 @@ TOKENS.forEach(function(t,i){ var o=document.createElement('option'); o.value=i;
 // ── connect (explicit only, no auto-connect) ──
 $('connectBtn').addEventListener('click', async function(){
   if(account){ // disconnect
-    try{ if(window.ethereum&&window.ethereum.request){ await window.ethereum.request({method:'wallet_revokePermissions',params:[{eth_accounts:{}}]}); }catch(e){} }
+    try{ if(window.ethereum&&window.ethereum.request){ await window.ethereum.request({method:'wallet_revokePermissions',params:[{eth_accounts:{}}]}); } }catch(e){}
     account=null; signer=null; $('connectBtn').textContent='CONNECT'; $('connectBtn').classList.remove('on'); return;
   }
   if(!window.ethereum){ alert('No wallet found — or just paste an address instead.'); return; }
