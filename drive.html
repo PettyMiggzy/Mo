@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>MOJAK DRIVE</title>
+<link rel="icon" href="/assets/logo.png" />
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@600;800&display=swap" rel="stylesheet" />
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--mojak:#9d4dff;--violet:#b985ff;--hot:#ff48c4;--acid:#c6ff4d;--bg:#0b0614}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Outfit',sans-serif;color:#fff;touch-action:none}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;width:100%;height:100%}
+.hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:14px 16px;pointer-events:none;font-family:'Boogaloo',cursive;letter-spacing:.5px}
+.hud .box{background:rgba(11,6,20,.55);border:1px solid rgba(157,77,255,.4);border-radius:12px;padding:6px 12px;backdrop-filter:blur(4px)}
+.hud .lbl{font-size:10px;color:var(--violet);font-family:'Outfit';letter-spacing:.1em}
+.hud .val{font-size:22px;line-height:1}
+.val.acid{color:var(--acid)}
+.overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 40%,rgba(157,77,255,.18),rgba(11,6,20,.92));z-index:10}
+.overlay h1{font-family:'Boogaloo';font-size:clamp(40px,13vw,72px);line-height:.9;background:linear-gradient(135deg,var(--mojak),var(--violet),var(--acid));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px rgba(157,77,255,.5))}
+.overlay p{color:var(--violet);margin-top:10px;font-size:15px;max-width:340px}
+.overlay .big{font-family:'Boogaloo';font-size:30px;color:#fff;margin-top:6px}
+.overlay .big span{color:var(--acid)}
+.btn{margin-top:22px;font-family:'Boogaloo';font-size:24px;letter-spacing:1px;border:0;border-radius:16px;padding:15px 44px;cursor:pointer;color:#120016;background:linear-gradient(90deg,var(--mojak),var(--hot));box-shadow:0 8px 30px rgba(157,77,255,.5)}
+.hint{margin-top:16px;font-size:13px;color:#9b86c9}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div class="hud hidden" id="hud">
+  <div class="box"><div class="lbl">SCORE</div><div class="val" id="score">0</div></div>
+  <div class="box"><div class="lbl">BAGS 🪙</div><div class="val acid" id="bags">0</div></div>
+  <div class="box"><div class="lbl">BEST</div><div class="val" id="best">0</div></div>
+</div>
+
+<div class="overlay" id="startScreen">
+  <h1>MOJAK<br>DRIVE</h1>
+  <p>steer with your finger (or arrow keys). grab MOJAK heads 🪙 — dodge the red candles. don't crash. don't sell.</p>
+  <button class="btn" id="startBtn">DRIVE 🫡</button>
+  <div class="hint">payouts off — this is a test run. just vibe.</div>
+</div>
+
+<div class="overlay hidden" id="overScreen">
+  <h1 id="overTitle">REKT</h1>
+  <p id="overLine">you ate a red candle. as expected.</p>
+  <div class="big">score <span id="finalScore">0</span> · <span id="finalBags">0</span> bags</div>
+  <button class="btn" id="retryBtn">AGAIN</button>
+  <div class="hint" id="bestHint"></div>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp; try{ tg?.ready(); tg?.expand(); }catch(e){}
+const cvs = document.getElementById('c'), ctx = cvs.getContext('2d');
+let W=0,H=0,DPR=Math.min(2,window.devicePixelRatio||1);
+function resize(){ W=window.innerWidth; H=window.innerHeight; cvs.width=W*DPR; cvs.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
+window.addEventListener('resize',resize); resize();
+
+// MOJAK head, circle-cropped (source is opaque 256x256)
+const head = new Image(); head.src='/assets/logo.png'; let headReady=false; head.onload=()=>headReady=true;
+function drawHead(x,y,r,spin){
+  ctx.save(); ctx.translate(x,y); if(spin) ctx.rotate(spin);
+  ctx.beginPath(); ctx.arc(0,0,r,0,7); ctx.closePath();
+  ctx.fillStyle='#9d4dff'; ctx.fill(); ctx.clip();
+  if(headReady) ctx.drawImage(head,-r,-r,r*2,r*2);
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.lineWidth=2; ctx.strokeStyle='rgba(198,255,77,.8)'; ctx.stroke();
+}
+
+// ---- game state ----
+let state='start', score=0, bags=0, best=+(localStorage.getItem('mojakdrive_best')||0);
+let speed, baseSpeed, dist, playerX, targetX, items, spawnT, shake;
+const horizonY=()=>H*0.40;
+function roadHalf(y){ const t=(y-horizonY())/(H-horizonY()); return 30 + t*t*(W*0.46); } // perspective width
+function roadCenter(y){ return W/2; } // straight road (clean + readable)
+
+function reset(){
+  score=0; bags=0; speed=baseSpeed=0.010; dist=0; playerX=0; targetX=0; items=[]; spawnT=0; shake=0;
+  document.getElementById('best').textContent=Math.floor(best);
+}
+
+// ---- input ----
+let dragging=false;
+function setTargetFromX(clientX){ targetX = Math.max(-1,Math.min(1, (clientX - W/2)/(W*0.42))); }
+cvs.addEventListener('touchstart',e=>{dragging=true; setTargetFromX(e.touches[0].clientX);},{passive:true});
+cvs.addEventListener('touchmove',e=>{ if(dragging) setTargetFromX(e.touches[0].clientX);},{passive:true});
+cvs.addEventListener('touchend',()=>dragging=false);
+cvs.addEventListener('mousedown',e=>{dragging=true;setTargetFromX(e.clientX);});
+window.addEventListener('mousemove',e=>{if(dragging)setTargetFromX(e.clientX);});
+window.addEventListener('mouseup',()=>dragging=false);
+let keyL=false,keyR=false;
+window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')keyL=true;if(e.key==='ArrowRight')keyR=true;});
+window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft')keyL=false;if(e.key==='ArrowRight')keyR=false;});
+
+// ---- spawning ----
+function spawn(){
+  const lane = (Math.random()*2-1)*0.82;
+  const isCandle = Math.random()<0.42;
+  items.push({ d:1.0, x:lane, type:isCandle?'candle':'head', spin:Math.random()*6, hit:false });
+}
+
+// ---- update ----
+function update(dt){
+  if(state!=='play') return;
+  baseSpeed = 0.010 + Math.min(0.022, dist*0.0000009);
+  speed = baseSpeed;
+  dist += speed*4000*dt/16;
+  if(keyL) targetX-=0.05; if(keyR) targetX+=0.05;
+  targetX=Math.max(-1,Math.min(1,targetX));
+  playerX += (targetX-playerX)*0.18;
+
+  spawnT-=dt; if(spawnT<=0){ spawn(); spawnT = 360 - Math.min(220, dist*0.02); }
+
+  for(const it of items){ it.d -= speed*dt/16; it.spin+=0.04; }
+  // collisions near player band
+  const pBandLo=0.0, pBandHi=0.10;
+  for(const it of items){
+    if(it.hit) continue;
+    if(it.d<=pBandHi && it.d>=pBandLo-0.04){
+      if(Math.abs(it.x-playerX)<0.20){
+        it.hit=true;
+        if(it.type==='head'){ bags++; score+=100; addPop('+100 🪙', '#c6ff4d'); }
+        else { return crash(); }
+      }
+    }
+  }
+  items=items.filter(it=>it.d>-0.06);
+  score += Math.floor(speed*60);
+  document.getElementById('score').textContent=Math.floor(score);
+  document.getElementById('bags').textContent=bags;
+  if(shake>0) shake*=0.86;
+}
+
+let pops=[];
+function addPop(t,c){ pops.push({t,c,x:W/2,y:H*0.7,life:1}); if(navigator.vibrate)navigator.vibrate(20); }
+
+function crash(){
+  state='over'; shake=14;
+  best=Math.max(best,score); localStorage.setItem('mojakdrive_best',best);
+  const lines=['you ate a red candle. as expected.','crashed. but you didn\u2019t sell. moral victory.','rugged by a pothole. classic.','down bad on the road too. relatable.','skill issue. drive again ser.'];
+  document.getElementById('overTitle').textContent = bags>=10?'NOT BAD':'REKT';
+  document.getElementById('overLine').textContent = lines[Math.floor(Math.random()*lines.length)];
+  document.getElementById('finalScore').textContent=Math.floor(score);
+  document.getElementById('finalBags').textContent=bags;
+  document.getElementById('bestHint').textContent = score>=best?'🏆 new personal best!':('best: '+Math.floor(best));
+  setTimeout(()=>{ document.getElementById('hud').classList.add('hidden'); document.getElementById('overScreen').classList.remove('hidden'); },500);
+}
+
+// ---- render ----
+function render(){
+  const sx = (Math.random()-0.5)*shake, sy=(Math.random()-0.5)*shake;
+  ctx.save(); ctx.translate(sx,sy);
+  // sky
+  const g=ctx.createLinearGradient(0,0,0,horizonY()); g.addColorStop(0,'#1a0b33'); g.addColorStop(1,'#3a1a66');
+  ctx.fillStyle=g; ctx.fillRect(-20,-20,W+40,horizonY()+20);
+  // sun
+  ctx.beginPath(); ctx.arc(W/2,horizonY(),W*0.18,0,7); ctx.fillStyle='rgba(255,72,196,.35)'; ctx.fill();
+  // grass
+  ctx.fillStyle='#0d0a1a'; ctx.fillRect(-20,horizonY(),W+40,H-horizonY()+20);
+  // road (perspective trapezoid with scrolling rumble strips)
+  const hY=horizonY();
+  for(let y=Math.floor(hY); y<H; y+=2){
+    const half=roadHalf(y), cx=roadCenter(y);
+    const band=Math.floor((y+ (dist*0.6))/ (8+ (y-hY)*0.10)) %2;
+    ctx.fillStyle = band? '#241338':'#1b0f2a';
+    ctx.fillRect(cx-half,y,half*2,2);
+    // rumble edges
+    ctx.fillStyle = band? '#9d4dff':'#ff48c4';
+    ctx.fillRect(cx-half,y,half*0.07,2); ctx.fillRect(cx+half-half*0.07,y,half*0.07,2);
+  }
+  // center dashes
+  for(let y=Math.floor(hY); y<H; y+=2){
+    const half=roadHalf(y),cx=roadCenter(y);
+    const band=Math.floor((y+dist*0.6)/(14+(y-hY)*0.12))%2;
+    if(band){ ctx.fillStyle='rgba(198,255,77,.5)'; ctx.fillRect(cx-half*0.02,y,half*0.04,2); }
+  }
+  // items
+  for(const it of items){
+    if(it.hit && it.type==='head') continue;
+    const t=1-it.d; const y=hY + (H-hY)*t*t; const half=roadHalf(y),cx=roadCenter(y);
+    const x=cx + it.x*half; const sc=(t*t);
+    if(it.type==='head'){ const r=Math.max(4,18*sc+6); drawHead(x,y-r,r,it.spin); }
+    else { // red candle
+      const w=Math.max(6,20*sc), h=Math.max(14,52*sc);
+      ctx.fillStyle='#ff3b5c'; ctx.fillRect(x-w/2,y-h,w,h);
+      ctx.strokeStyle='#ff3b5c'; ctx.lineWidth=Math.max(1,2*sc); ctx.beginPath(); ctx.moveTo(x,y-h-h*0.3); ctx.lineTo(x,y+h*0.15); ctx.stroke();
+    }
+  }
+  // player (car + MOJAK head driver)
+  const py=H*0.84, px=W/2 + playerX*(W*0.40);
+  ctx.save(); ctx.translate(px,py); ctx.rotate((targetX-playerX)*0.25);
+  // car body
+  ctx.fillStyle='#7b2dff'; roundRect(-34,-10,68,46,10); ctx.fill();
+  ctx.fillStyle='#5a1fc0'; roundRect(-30,18,60,16,6); ctx.fill();
+  ctx.fillStyle='#120016'; ctx.fillRect(-38,8,8,22); ctx.fillRect(30,8,8,22); // wheels
+  ctx.restore();
+  drawHead(px, py-18, 18, 0); // driver head
+  // pops
+  ctx.textAlign='center'; ctx.font="700 22px Boogaloo, sans-serif";
+  pops=pops.filter(p=>p.life>0);
+  for(const p of pops){ p.y-=1.4; p.life-=0.02; ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=p.c; ctx.fillText(p.t,p.x,p.y); ctx.globalAlpha=1; }
+  ctx.restore();
+}
+function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+// ---- loop ----
+let last=performance.now();
+function loop(now){ const dt=Math.min(40,now-last); last=now; update(dt); render(); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+
+// ---- screens ----
+function startGame(){ reset(); state='play'; document.getElementById('startScreen').classList.add('hidden'); document.getElementById('overScreen').classList.add('hidden'); document.getElementById('hud').classList.remove('hidden'); last=performance.now(); }
+document.getElementById('startBtn').onclick=startGame;
+document.getElementById('retryBtn').onclick=startGame;
+</script>
+</body>
+</html>
