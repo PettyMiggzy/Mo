@@ -60,6 +60,14 @@ window.addEventListener('resize',resize); resize();
 
 // MOJAK head, circle-cropped (source is opaque 256x256)
 const head = new Image(); head.src='/assets/logo.png'; let headReady=false; head.onload=()=>headReady=true;
+const FEELS = ['based','bloomer','comfy','cope','doomer','npc','og_brainlet','og_hipster','og_soy','rage','sending']
+  .map(n=>{ const i=new Image(); i.src='/assets/feels/'+n+'.png'; return i; });
+function drawImgCircle(img,x,y,r){
+  if(!img || !img.complete || !img.naturalWidth) return;
+  ctx.save(); ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.closePath(); ctx.clip();
+  ctx.drawImage(img,x-r,y-r,r*2,r*2); ctx.restore();
+  ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.lineWidth=1.5; ctx.strokeStyle='rgba(157,77,255,.5)'; ctx.stroke();
+}
 function drawHead(x,y,r,spin){
   ctx.save(); ctx.translate(x,y); if(spin) ctx.rotate(spin);
   ctx.beginPath(); ctx.arc(0,0,r,0,7); ctx.closePath();
@@ -71,13 +79,13 @@ function drawHead(x,y,r,spin){
 
 // ---- game state ----
 let state='start', score=0, bags=0, best=+(localStorage.getItem('mojakdrive_best')||0);
-let speed, baseSpeed, dist, playerX=0, targetX=0, items=[], spawnT=0, shake=0;
+let speed, baseSpeed, dist, playerX=0, targetX=0, items=[], spawnT=0, shake=0, scenery=[], sceneryT=0;
 const horizonY=()=>H*0.40;
 function roadHalf(y){ const t=(y-horizonY())/(H-horizonY()); return 30 + t*t*(W*0.46); } // perspective width
 function roadCenter(y){ return W/2; } // straight road (clean + readable)
 
 function reset(){
-  score=0; bags=0; speed=baseSpeed=0.010; dist=0; playerX=0; targetX=0; items=[]; spawnT=0; shake=0;
+  score=0; bags=0; speed=baseSpeed=0.006; dist=0; playerX=0; targetX=0; items=[]; spawnT=0; shake=0; scenery=[]; sceneryT=0;
   document.getElementById('best').textContent=Math.floor(best);
 }
 
@@ -112,6 +120,9 @@ function update(dt){
   playerX += (targetX-playerX)*0.18;
 
   spawnT-=dt; if(spawnT<=0){ spawn(); spawnT = 520 - Math.min(300, dist*0.012); }
+  sceneryT-=dt; if(sceneryT<=0){ scenery.push({ d:1.0, side: Math.random()<0.5?-1:1, off:1.25+Math.random()*0.9, img: FEELS[(Math.random()*FEELS.length)|0] }); sceneryT=210; }
+  for(const sc of scenery){ sc.d -= speed*dt/16; }
+  scenery=scenery.filter(sc=>sc.d>-0.1);
 
   for(const it of items){ it.d -= speed*dt/16; it.spin+=0.04; }
   // collisions near player band
@@ -175,6 +186,12 @@ function render(){
     const half=roadHalf(y),cx=roadCenter(y);
     const band=Math.floor((y+dist*0.6)/(14+(y-hY)*0.12))%2;
     if(band){ ctx.fillStyle='rgba(198,255,77,.5)'; ctx.fillRect(cx-half*0.02,y,half*0.04,2); }
+  }
+  // roadside scenery (funny faces zooming past on the grass)
+  for(const sc of scenery){
+    const t=1-sc.d; if(t<=0) continue; const y=hY+(H-hY)*t*t; const half=roadHalf(y),cx=roadCenter(y);
+    const x=cx + sc.side*half*sc.off; const s2=t*t; const r=Math.max(3,30*s2+4);
+    if(x>-60 && x<W+60) drawImgCircle(sc.img,x,y-r,r);
   }
   // items
   for(const it of items){
