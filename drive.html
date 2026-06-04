@@ -104,14 +104,14 @@ function spawn(){
 // ---- update ----
 function update(dt){
   if(state!=='play') return;
-  baseSpeed = 0.010 + Math.min(0.022, dist*0.0000009);
+  baseSpeed = 0.006 + Math.min(0.016, dist*0.00000045);
   speed = baseSpeed;
   dist += speed*4000*dt/16;
   if(keyL) targetX-=0.05; if(keyR) targetX+=0.05;
   targetX=Math.max(-1,Math.min(1,targetX));
   playerX += (targetX-playerX)*0.18;
 
-  spawnT-=dt; if(spawnT<=0){ spawn(); spawnT = 360 - Math.min(220, dist*0.02); }
+  spawnT-=dt; if(spawnT<=0){ spawn(); spawnT = 520 - Math.min(300, dist*0.012); }
 
   for(const it of items){ it.d -= speed*dt/16; it.spin+=0.04; }
   // collisions near player band
