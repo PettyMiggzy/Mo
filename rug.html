@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>RUG RADAR · check any Monad token before you ape</title>
+<meta name="description" content="Paste any Monad token. See who actually bought vs who got a free bag they never paid for — and whether you're about to get dumped on. Powered by MOJAK." />
+<link rel="icon" type="image/png" href="/assets/logo.png" />
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#0b0614;--panel:#160c28;--panel2:#1b0f2a;--mojak:#9d4dff;--mojak2:#7b2dff;--violet:#b985ff;
+--hot:#ff48c4;--acid:#c6ff4d;--dim:#9b86c9;--ink:#f3ecff;--line:rgba(157,77,255,.18);
+--green:#4ade80;--yellow:#ffd84d;--red:#ff5d73;--fd:'Boogaloo',cursive;--fm:'Outfit',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:var(--fm);min-height:100vh;overflow-x:hidden;
+background-image:radial-gradient(120% 55% at 50% -10%,rgba(157,77,255,.22),transparent 60%),radial-gradient(80% 50% at 100% 12%,rgba(255,72,196,.1),transparent 55%);background-attachment:fixed}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 80px}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px;backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(11,6,20,.92),rgba(11,6,20,.35));border-bottom:1px solid var(--line)}
+.bar a{color:var(--mojak);text-decoration:none;font-family:var(--fd);font-size:16px}
+.bar .links{display:flex;gap:14px;align-items:center}.bar .links a{color:var(--dim);font-size:13px;font-family:var(--fm)}
+.hero{text-align:center;padding:26px 0 8px}
+.hero h1{font-family:var(--fd);font-size:clamp(36px,10vw,64px);line-height:.92;background:linear-gradient(135deg,var(--mojak),var(--violet),var(--hot));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 22px rgba(157,77,255,.45))}
+.hero p{color:var(--dim);font-size:14px;margin-top:8px;max-width:520px;margin-inline:auto}
+.ctrl{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:18px 0}
+label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:block;margin:0 0 7px}
+input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;color:var(--violet);font-family:var(--fm);padding:13px 14px;font-size:15px}
+.go{margin-top:12px;width:100%;font-family:var(--fd);font-size:18px;letter-spacing:1px;border:0;border-radius:14px;padding:15px;cursor:pointer;background:linear-gradient(90deg,var(--mojak2),var(--mojak),var(--hot));color:#120016}
+.go:disabled{opacity:.55;cursor:not-allowed}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.quick button{font-family:var(--fd);font-size:12px;letter-spacing:.5px;background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:20px;padding:7px 13px;cursor:pointer}
+.quick button:hover{border-color:var(--mojak);color:var(--mojak)}
+.verdict{text-align:center;border-radius:20px;padding:24px 18px;margin:18px 0;border:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),rgba(11,6,20,.85))}
+.verdict .big{font-family:var(--fd);font-size:clamp(30px,8vw,50px);line-height:1.02}
+.verdict .sub{color:var(--dim);font-size:14px;margin-top:10px;max-width:540px;margin-inline:auto;line-height:1.5}
+.v-clean .big{color:var(--acid)}.v-mid .big{color:var(--yellow)}.v-rug .big{color:var(--hot)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+@media(min-width:620px){.grid{grid-template-columns:repeat(4,1fr)}}
+.stat{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.85));border:1px solid var(--line);border-radius:16px;padding:15px;text-align:center}
+.stat .n{font-family:var(--fd);font-size:23px;color:var(--mojak)}.stat .n.g{color:var(--green)}.stat .n.y{color:var(--yellow)}.stat .n.r{color:var(--red)}
+.stat .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+.card{background:linear-gradient(180deg,var(--panel),rgba(11,6,20,.9));border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}
+.card h2{font-family:var(--fd);font-size:17px;color:var(--mojak);margin-bottom:3px}
+.card .sub{color:var(--dim);font-size:12px;margin-bottom:12px}
+.w{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid var(--line);margin-bottom:8px;background:var(--bg)}
+.w .tag{font-size:11px;font-family:var(--fd);letter-spacing:.5px;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.tag.buyer{color:var(--green);border:1px solid rgba(74,222,128,.4)}
+.tag.loaded{color:var(--yellow);border:1px solid rgba(255,216,77,.4)}
+.tag.dumper{color:var(--red);border:1px solid rgba(255,93,115,.4)}
+.tag.mover{color:var(--red);border:1px solid rgba(255,93,115,.3)}
+.w a{flex:1;min-width:0;color:var(--ink);text-decoration:none;font-size:13px;font-family:var(--fm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w a:hover{color:var(--mojak)}
+.w .pct{font-family:var(--fd);font-size:15px;color:var(--ink);flex-shrink:0}
+.note{font-size:12px;color:var(--dim);margin-top:6px}
+.warnbox{background:rgba(255,216,77,.08);border:1px solid rgba(255,216,77,.35);color:var(--yellow);border-radius:12px;padding:11px 14px;font-size:13px;margin:12px 0;text-align:center}
+.msg{text-align:center;color:var(--dim);font-size:14px;padding:20px}
+.spin{display:inline-block;width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--mojak);border-radius:50%;animation:s .7s linear infinite;vertical-align:middle}
+@keyframes s{to{transform:rotate(360deg)}}
+.legend{font-size:12px;color:var(--dim);text-align:center;margin-top:8px;line-height:1.8}
+.foot{text-align:center;color:var(--dim);font-size:11px;margin-top:24px;line-height:1.7}.foot a{color:var(--mojak);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="bar">
+  <a href="/">‹ $MOJAK</a>
+  <div class="links"><a href="/wagmi">WAGMI?</a><a href="/swap">Swap</a><a href="/stake">Stake</a></div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>RUG RADAR</h1>
+    <p>Paste any Monad token. See who actually <b style="color:var(--green)">paid</b> vs who's sitting on a <b style="color:var(--yellow)">free bag they never bought</b> — before you ape in.</p>
+  </div>
+
+  <div class="ctrl">
+    <label>Token contract address</label>
+    <input id="tokenIn" type="text" placeholder="0x… any Monad token" spellcheck="false" />
+    <button class="go" id="goBtn">SCAN IT 🔎</button>
+    <div class="quick" id="quick"></div>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="foot">
+    Reads on-chain transfer history — every flag links to the explorer so you can verify it yourself.<br>
+    Powered by <a href="/">$MOJAK</a> · vibes are jokes, the wallets are real.
+  </div>
+</div>
+
+<script>
+var EXPLORER="https://monadscan.com/address/";
+var QUICK=[
+  {sym:"MOJAK",a:"0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777"},
+  {sym:"CHOG",a:"0x5e1b1a14c8758104b8560514e94ab8320e587777"},
+  {sym:"MONSHI",a:"0xB744F5CDb792d8187640214C4A1c9aCE29af7777"},
+  {sym:"RENE",a:"0xaCA86430cCCEdbedB35910fC8A5AFEF07dA37777"}
+];
+function $(i){return document.getElementById(i);}
+function short(a){return a.slice(0,6)+"…"+a.slice(-4);}
+QUICK.forEach(function(q){var b=document.createElement('button');b.textContent=q.sym;b.onclick=function(){$('tokenIn').value=q.a;run();};$('quick').appendChild(b);});
+
+$('goBtn').addEventListener('click',run);
+$('tokenIn').addEventListener('keydown',function(e){if(e.key==='Enter')run();});
+
+async function run(){
+  var addr=($('tokenIn').value||'').trim();
+  if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){ $('result').innerHTML='<div class="msg" style="color:var(--hot)">that\u2019s not a valid token address</div>'; return; }
+  $('goBtn').disabled=true;
+  $('result').innerHTML='<div class="msg"><span class="spin"></span> walking the chain — who bought, who got free bags…</div>';
+  try{
+    var r=await fetch('/api/insiders?address='+addr,{cache:'no-store'});
+    if(!r.ok){ var t=await r.text(); throw new Error('HTTP '+r.status+' '+t.slice(0,80)); }
+    var d=await r.json();
+    render(addr,d);
+  }catch(e){
+    $('result').innerHTML='<div class="msg" style="color:var(--hot)">scan failed — '+((e&&e.message)||e).toString().slice(0,90)+'</div>';
+  } finally { $('goBtn').disabled=false; }
+}
+
+function render(addr,d){
+  // 1%+ holders only — the wallets big enough to actually hurt you
+  var big=(d.holders||[]).filter(function(h){return h.pct>=1;});
+  var bigFree=big.filter(function(h){return h.cat==='loaded'||h.cat==='dumper'||h.cat==='mover';});
+  var bigFreePct=Math.round(bigFree.reduce(function(s,h){return s+h.pct;},0)*100)/100;
+  var s=d.stats||{};
+
+  // ---- dumb-funny verdict, driven by real risk ----
+  var cls='v-mid',big_t='HMMMM',sub='';
+  if(d.risk==='high'||bigFreePct>=8){
+    cls='v-rug'; big_t='🚩🚩 RUG VIBES';
+    sub=bigFree.length+' fat wallet'+(bigFree.length===1?'':'s')+' holding '+bigFreePct+'% of supply that <b>never paid a cent</b> for it. that\u2019s a loaded gun pointed at your bag. ape at your own funeral. 💀';
+  } else if(d.risk==='medium'||bigFree.length>0){
+    cls='v-mid'; big_t='🚩 KINDA SUS';
+    sub=bigFree.length+' whale'+(bigFree.length===1?'':'s')+' (≥1%) got '+bigFreePct+'% free and never bought. not an instant rug, but keep your finger near the sell. 👀';
+  } else if(big.length===0){
+    cls='v-clean'; big_t='✅ SPREAD OUT';
+    sub='No single wallet even holds 1%. Either super distributed or super dead — either way nobody\u2019s sitting on a supply bomb. based.';
+  } else {
+    cls='v-clean'; big_t='✅ LOOKS BASED';
+    sub='Every whale (≥1%) actually <b>bought in</b> — no fat free bags lurking. ape away, ser. (still not financial advice 🫡)';
+  }
+  var html='<div class="verdict '+cls+'"><div class="big">'+big_t+'</div><div class="sub">'+sub+'</div></div>';
+
+  // ---- stats ----
+  html+='<div class="grid">'+
+    '<div class="stat"><div class="n">'+big.length+'</div><div class="k">Whales ≥1%</div></div>'+
+    '<div class="stat"><div class="n g">'+(s.buyers||0)+'</div><div class="k">Actually Bought</div></div>'+
+    '<div class="stat"><div class="n y">'+bigFree.length+'</div><div class="k">Free Bags ≥1%</div></div>'+
+    '<div class="stat"><div class="n r">'+(s.dumped||0)+'</div><div class="k">Already Dumped</div></div>'+
+  '</div>';
+
+  if(s.partial){ html+='<div class="warnbox">⚠️ Big token — scanned the most recent '+(s.transfers||0).toLocaleString()+' transfers, so older history may be missing. Treat as a snapshot, not the whole life story.</div>'; }
+
+  // ---- the ≥1% wallets, flagged ----
+  if(big.length){
+    html+='<div class="card"><h2>The wallets that matter (≥1%)</h2><div class="sub">Tap any to verify on the explorer. We show our work — no blind accusations.</div>';
+    big.slice(0,30).forEach(function(h){
+      var label = h.cat==='buyer'?'🟢 BOUGHT':(h.cat==='loaded'?'🟡 FREE BAG':(h.cat==='dumper'?'🔴 DUMPED':(h.cat==='mover'?'🔴 FREE/MOVED':'·'+h.cat)));
+      var dep = h.fromDeployer ? ' <span style="color:var(--red)">· from dev</span>' : '';
+      html+='<div class="w"><span class="tag '+h.cat+'">'+label+'</span>'+
+            '<a href="'+EXPLORER+h.address+'" target="_blank" rel="noopener">'+short(h.address)+dep+'</a>'+
+            '<span class="pct">'+h.pct.toFixed(2)+'%</span></div>';
+    });
+    html+='<div class="legend">🟢 paid for it · 🟡 got it free & still holding (insider bag) · 🔴 got free & sold / moving it</div></div>';
+  } else {
+    html+='<div class="card"><div class="msg">No wallet holds ≥1% — distribution looks flat. Nothing big enough to dump-bomb you.</div></div>';
+  }
+
+  $('result').innerHTML=html;
+}
+</script>
+</body>
+</html>
