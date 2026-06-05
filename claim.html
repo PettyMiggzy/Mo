@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>MOJAK · Claim Your Cope</title>
+<meta name="description" content="You held. You suffered. You posted through it. Now claim your $MOJAK rewards for being unwell online." />
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b0614; --bg2:#120a22; --panel:#160c28; --panel2:#1d1233; --line:rgba(157,77,255,.22);
+  --ink:#f3ecff; --dim:#9b86c9; --mojak:#9d4dff; --mojak2:#7b2dff; --violet:#b985ff;
+  --hot:#ff48c4; --acid:#c6ff4d; --mon:#b79bff;
+  --disp:'Boogaloo',cursive; --body:'Outfit',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow-x:hidden;position:relative;
+  background-image:radial-gradient(120% 60% at 50% -10%,rgba(157,77,255,.22),transparent 60%)}
+.display{font-family:var(--disp);letter-spacing:1px}
+
+/* floating cope emojis in bg */
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.float{position:absolute;font-size:26px;opacity:.13;animation:drift linear infinite}
+@keyframes drift{0%{transform:translateY(110vh) rotate(0)}100%{transform:translateY(-20vh) rotate(360deg)}}
+.sun{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,var(--hot),var(--mojak2) 70%,transparent);filter:blur(2px);opacity:.55;
+  animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:.65}}
+
+.wrap{position:relative;z-index:3;max-width:540px;margin:0 auto;padding:0 18px 80px;min-height:100%}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 4px}
+.bar a{color:var(--violet);text-decoration:none;font-family:var(--disp);font-size:22px}
+#connectBtn{font-family:var(--disp);font-size:16px;letter-spacing:.5px;border:2px solid var(--mojak);background:transparent;color:var(--violet);border-radius:30px;padding:7px 18px;cursor:pointer}
+#connectBtn.on{background:rgba(157,77,255,.18)}
+
+.hero{text-align:center;padding:24px 0 4px}
+.hero h1{font-family:var(--disp);font-size:clamp(56px,15vw,110px);line-height:.85;transform:rotate(-2deg);
+  text-shadow:5px 5px 0 var(--mojak2),10px 10px 0 rgba(255,72,196,.4)}
+.hero .tag{color:var(--dim);font-size:15px;margin-top:14px;line-height:1.5}
+.hero .tag b{color:var(--acid)}
+
+.pool{text-align:center;margin:14px 0 2px;font-size:13px;color:var(--dim)}
+.pool .lab{font-family:var(--disp);font-size:16px;color:var(--violet);letter-spacing:.5px}
+.pool #poolChr{color:var(--acid)} .pool #poolMon{color:var(--mon)}
+
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:20px;padding:24px;margin:16px 0;
+  box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.rank{text-align:center}
+.rank .emoji{font-size:40px}
+.rank .name{font-family:var(--disp);font-size:30px;color:var(--violet);margin-top:2px}
+.rank .xp{color:var(--dim);font-size:13px}
+.bar2{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:10px}
+.bar2 i{display:block;height:100%;background:linear-gradient(90deg,var(--mojak2),var(--mojak),var(--hot));box-shadow:0 0 14px rgba(157,77,255,.6)}
+.rowline{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+.rowline:last-of-type{border-bottom:0}
+.rowline .k{color:var(--dim);font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+.rowline .v{font-family:var(--disp);font-size:26px}
+.v.acid{color:var(--acid)} .v.mon{color:var(--mon)}
+.locked{font-size:13px;color:var(--dim);text-align:center;margin:8px 0 0}.locked b{color:var(--mon)}
+.claim{margin-top:16px;width:100%;font-family:var(--disp);font-size:24px;letter-spacing:.5px;border:0;border-radius:14px;padding:15px;cursor:pointer;
+  background:linear-gradient(90deg,var(--mojak2),var(--hot));color:#fff;text-shadow:1px 1px 0 rgba(0,0,0,.3);box-shadow:0 0 26px rgba(255,72,196,.45)}
+.claim:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.tx{font-size:12px;color:var(--violet);text-align:center;margin-top:12px;word-break:break-all}
+.msg{text-align:center;color:var(--dim);font-size:15px;padding:24px;line-height:1.6}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--hot);border-radius:50%;animation:s .7s linear infinite;vertical-align:middle}
+@keyframes s{to{transform:rotate(360deg)}}
+.foot{text-align:center;color:var(--dim);font-size:11px;margin-top:24px;line-height:1.9}.foot a{color:var(--violet);text-decoration:none}
+</style>
+</head>
+<body>
+<div id="bg"><div class="sun"></div></div>
+
+<div class="wrap">
+  <div class="bar">
+    <a href="/">‹ $MOJAK</a>
+    <button id="connectBtn">CONNECT</button>
+  </div>
+
+  <div class="hero">
+    <h1>CLAIM<br>YOUR COPE</h1>
+    <p class="tag">you held. you suffered. you posted through it.<br>now get paid for being <b>unwell online</b>. 🫡</p>
+  </div>
+
+  <div class="pool" id="pool">
+    <span class="lab">THE BAG</span><br>
+    <span id="poolChr">…</span> MOJAK &nbsp;·&nbsp; <span id="poolMon">…</span> MON
+  </div>
+
+  <div id="content">
+    <div class="msg">connect your wallet to see how much copium you've farmed.</div>
+  </div>
+
+  <div class="foot">
+    rewards come from the community bag. holding <b style="color:var(--acid)">1,000,000 MOJAK</b> unlocks MON on top — because true believers eat first.<br>
+    <a href="/">home</a> · <a href="/drive">drive</a>
+  </div>
+</div>
+
+<script>
+// ===================== CONFIG =====================
+// flip live after the MOJAK claim contract is deployed:
+const MOCK_MODE     = true;
+const CONTRACT_ADDR = "0x0000000000000000000000000000000000000000"; // MOJAK ChronicXPClaim (set after deploy)
+const BOT_API       = "/api/claim?wallet=";   // mojak xp-bot proxy (set up with the contract)
+const MOJAK_TOKEN   = "0x84Ea11d047A8bB23149a2d79C3B14Ab5B5907777";
+const RPC           = "https://monad-mainnet.g.alchemy.com/v2/_ZfKSl1YD2Yur6eajfKkN";
+const CHAIN_ID      = 143;
+const HOLD_REQ      = 1000000;
+
+const CLAIM_ABI=[
+  "function claim(uint256 totalChronic,uint256 totalMon,bytes signature) external",
+  "function claimedChronic(address) view returns (uint256)",
+  "function claimedMon(address) view returns (uint256)",
+  "function poolBalances() view returns (uint256,uint256)"
+];
+function $(i){return document.getElementById(i);}
+function short(a){return a.slice(0,6)+"…"+a.slice(-4);}
+let account=null, signer=null;
+
+// MOJAK cope commentary based on rank/amount
+function copeLine(xp){
+  if(xp<250) return "barely posted. NGMI energy. keep grinding ser.";
+  if(xp<1000) return "you're cooked but consistent. respect.";
+  if(xp<3000) return "certified poster. the timeline fears you.";
+  if(xp<8000) return "you have a problem and that problem is bullish.";
+  return "touch grass? in THIS market? absolute degen. 🫡";
+}
+
+// floating cope emojis
+(function(){
+  const e=['😭','💀','🫡','📉','💎','🤡','🔥','📈','😩'];
+  const bg=$('bg');
+  for(let i=0;i<14;i++){ const d=document.createElement('div'); d.className='float';
+    d.textContent=e[Math.random()*e.length|0];
+    d.style.left=(Math.random()*100)+'%'; d.style.animationDuration=(12+Math.random()*16)+'s';
+    d.style.animationDelay=(Math.random()*16)+'s'; d.style.fontSize=(18+Math.random()*26)+'px';
+    bg.appendChild(d); }
+})();
+
+$('connectBtn').addEventListener('click', async ()=>{
+  if(account){ account=null;signer=null; $('connectBtn').textContent='CONNECT'; $('connectBtn').classList.remove('on'); $('content').innerHTML='<div class="msg">connect your wallet to see how much copium you\u2019ve farmed.</div>'; return; }
+  if(!window.ethereum){ alert('No wallet found. Install MetaMask or open in a wallet browser.'); return; }
+  try{
+    const bp=new ethers.BrowserProvider(window.ethereum);
+    await bp.send('eth_requestAccounts',[]);
+    signer=await bp.getSigner(); account=await signer.getAddress();
+    $('connectBtn').textContent=short(account)+' ✕'; $('connectBtn').classList.add('on');
+    loadRewards();
+  }catch(e){}
+});
+
+async function getClaimData(wallet){
+  if(MOCK_MODE){
+    return { xp:4200, rankEmoji:'💀', rankName:'Dead Inside', nextAt:8000,
+             totalChronic:"21000", totalMon:"8.4", claimedChronic:"0", claimedMon:"0",
+             holds1M:true, signature:"0xMOCK" };
+  }
+  const r=await fetch(BOT_API+encodeURIComponent(wallet),{cache:'no-store'});
+  if(!r.ok) throw new Error('could not load your cope');
+  const d=await r.json();
+  if(d && d.cooldown) return d;
+  if(!d.found) throw new Error(d.message||'wallet not linked — use /wallet in the group');
+  try{
+    const ro=new ethers.JsonRpcProvider(RPC,143);
+    const c=new ethers.Contract(CONTRACT_ADDR,CLAIM_ABI,ro);
+    const [cc,cm]=await Promise.all([c.claimedChronic(wallet),c.claimedMon(wallet)]);
+    d.totalChronic=ethers.formatUnits(d.totalChronic,18);
+    d.totalMon=ethers.formatEther(d.totalMon);
+    d.claimedChronic=ethers.formatUnits(cc,18);
+    d.claimedMon=ethers.formatEther(cm);
+  }catch(e){}
+  return d;
+}
+
+async function loadRewards(){
+  $('content').innerHTML='<div class="msg"><span class="spin"></span> counting your bags…</div>';
+  try{
+    const d=await getClaimData(account);
+    if(d && d.cooldown){ $('content').innerHTML='<div class="card"><div class="msg">🫡 '+(d.message||'you already claimed')+'<br><br>patience, bagholder. the cope replenishes weekly.</div></div>'; return; }
+    const cChr=Math.max(0,Number(d.totalChronic)-Number(d.claimedChronic));
+    const cMon=d.holds1M?Math.max(0,Number(d.totalMon)-Number(d.claimedMon)):0;
+    const pct=d.nextAt?Math.min(100,Math.round(d.xp/d.nextAt*100)):100;
+    let html='<div class="card"><div class="rank">'+
+      '<div class="emoji">'+d.rankEmoji+'</div><div class="name">'+d.rankName+'</div>'+
+      '<div class="xp">'+d.xp+' XP · '+copeLine(d.xp)+'</div>'+
+      '<div class="bar2"><i style="width:'+pct+'%"></i></div></div></div>';
+    html+='<div class="card">'+
+      '<div class="rowline"><span class="k">Claimable MOJAK</span><span class="v acid">'+cChr.toLocaleString()+'</span></div>'+
+      '<div class="rowline"><span class="k">Claimable MON</span><span class="v mon">'+(d.holds1M?cMon:'🔒')+'</span></div>';
+    if(!d.holds1M) html+='<div class="locked">Hold <b>1,000,000 MOJAK</b> to unlock MON. believers eat first.</div>';
+    html+='<button class="claim" id="claimBtn"'+((cChr<=0&&cMon<=0)?' disabled':'')+'>'+((cChr<=0&&cMon<=0)?'NOTHING TO CLAIM (ngmi)':'CLAIM THE COPE')+'</button>';
+    html+='<div class="tx" id="txOut"></div></div>';
+    $('content').innerHTML=html;
+    const b=$('claimBtn'); if(b) b.addEventListener('click',()=>doClaim(d));
+  }catch(e){ $('content').innerHTML='<div class="msg" style="color:#ff8585">'+((e&&e.message)||e)+'</div>'; }
+}
+
+async function doClaim(d){
+  const b=$('claimBtn'); b.disabled=true; b.textContent='COPING…';
+  try{
+    if(MOCK_MODE){ await new Promise(r=>setTimeout(r,1200));
+      $('txOut').innerHTML='✅ (preview) you sign + pay gas, the bag sends your MOJAK'+(d.holds1M?' + MON':'')+'. wire the contract to go live.';
+      b.textContent='COPED ✅'; return; }
+    const c=new ethers.Contract(CONTRACT_ADDR,CLAIM_ABI,signer);
+    const tx=await c.claim(ethers.parseUnits(String(d.totalChronic),18), ethers.parseEther(String(d.totalMon)), d.signature);
+    $('txOut').textContent='sent — coping on-chain…'; await tx.wait(1);
+    $('txOut').innerHTML='✅ claimed! you are slightly less broke. tx: '+tx.hash; b.textContent='COPED ✅';
+  }catch(e){ $('txOut').textContent='failed (stay strong): '+((e&&e.shortMessage)||e.message||e); b.disabled=false; b.textContent='CLAIM THE COPE'; }
+}
+
+async function loadPool(){
+  try{
+    const ro=new ethers.JsonRpcProvider(RPC,143);
+    const c=new ethers.Contract(CONTRACT_ADDR,CLAIM_ABI,ro);
+    const [chr,mon]=await c.poolBalances();
+    $('poolChr').textContent=Number(ethers.formatUnits(chr,18)).toLocaleString(undefined,{maximumFractionDigits:0});
+    $('poolMon').textContent=Number(ethers.formatEther(mon)).toLocaleString(undefined,{maximumFractionDigits:2});
+  }catch(e){ $('poolChr').textContent='—'; $('poolMon').textContent='—'; }
+}
+if(MOCK_MODE){ $('poolChr').textContent='420,000'; $('poolMon').textContent='69.00'; } else { loadPool(); }
+</script>
+</body>
+</html>
