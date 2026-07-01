@@ -211,7 +211,8 @@ var NFTSTAKE_ABI=[
 var STRAINS_ABI=[
  "function balanceOf(address) view returns (uint256)","function tokenOfOwnerByIndex(address,uint256) view returns (uint256)",
  "function tierOf(uint256) view returns (uint8)","function isApprovedForAll(address,address) view returns (bool)",
- "function setApprovalForAll(address,bool)","function nextId() view returns (uint256)","function ownerOf(uint256) view returns (address)"
+ "function setApprovalForAll(address,bool)","function nextId() view returns (uint256)","function ownerOf(uint256) view returns (address)",
+ "function approve(address,uint256)","function getApproved(uint256) view returns (address)"
 ];
 var ERC20_ABI=["function balanceOf(address) view returns (uint256)","function decimals() view returns (uint8)","function allowance(address,address) view returns (uint256)","function approve(address,uint256) returns (bool)"];
 
@@ -334,8 +335,16 @@ async function doStakeNfts(){
   var btn=document.getElementById('nftStakeBtn'); btn.disabled=true;
   try{
     var s=strainsCtr(signer), c=nftStakeCtr(signer);
-    var approved=await s.isApprovedForAll(account,CONFIG.NFTSTAKE_ADDR);
-    if(!approved){ nmsg('approving collection…',true); var ax=await s.setApprovalForAll(CONFIG.NFTSTAKE_ADDR,true); await ax.wait(); }
+    // Per-tokenId approve instead of setApprovalForAll(true) — the operator-approve-all
+    // pattern trips MetaMask/Blockaid's "approve all NFTs" warning. Approving each id
+    // individually clears it (transferFrom only needs per-token approval).
+    for(var i=0;i<ids.length;i++){
+      var cur=await s.getApproved(ids[i]);
+      if(cur.toLowerCase()!==CONFIG.NFTSTAKE_ADDR.toLowerCase()){
+        nmsg('approving Strain #'+ids[i]+'…',true);
+        var ax=await s.approve(CONFIG.NFTSTAKE_ADDR,ids[i]); await ax.wait();
+      }
+    }
     nmsg('staking…',true);
     var tx=await c.stake(ids); await tx.wait();
     nmsg('staked '+ids.length+' Strain'+(ids.length>1?'s':'')+' 🔥',true);
